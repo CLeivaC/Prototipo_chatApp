@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "81408914403",
+    "project_id": "chatv1-6f83c",
+    "storage_bucket": "chatv1-6f83c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:81408914403:android:8a31ed7563ab767d3fa6d6",
+        "android_client_info": {
+          "package_name": "com.leiva.prototipo_chatapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAl8ztMQA65L81RGhINsLxFFYGRvxAsr5E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

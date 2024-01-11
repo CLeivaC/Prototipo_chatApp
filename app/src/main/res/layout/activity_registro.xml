@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Registro">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@drawable/fondo_login"
+        android:scaleType="centerCrop"/>
+
+
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center">
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal">
+
+
+            <com.hbb20.CountryCodePicker
+                android:id="@+id/selector_codigo_pais"
+                app:ccp_autoDetectCountry="true"
+                app:ccp_rememberLastSelection="true"
+                android:layout_marginStart="5dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+            <EditText
+                android:id="@+id/R_et_telefono"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:hint="Telefono"
+                android:inputType="phone">
+            </EditText>
+            </com.google.android.material.textfield.TextInputLayout>
+        </LinearLayout>
+
+
+
+
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/R_Btn_enviar_sms"
+        android:layout_width="match_parent"
+        android:layout_marginTop="10dp"
+        android:layout_margin="10dp"
+        android:layout_marginBottom="10dp"
+        android:layout_height="wrap_content"
+        android:text="Enviar código sms"
+        android:backgroundTint="@color/blue_login"
+        app:icon="@drawable/ic_sms"
+        app:iconGravity="textStart"/>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_margin="10dp"
+            android:layout_height="wrap_content">
+
+            <EditText
+                android:id="@+id/R_et_codigo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Codigo">
+
+            </EditText>
+
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_marginTop="30dp"
+        android:layout_margin="10dp"
+        android:layout_height="wrap_content">
+
+        <EditText
+            android:id="@+id/R_et_n_usuario"
+
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Nombre de usuario">
+
+        </EditText>
+
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_marginTop="10dp"
+        app:passwordToggleEnabled="true"
+        android:layout_margin="10dp"
+        android:layout_height="wrap_content">
+
+        <EditText
+            android:id="@+id/R_et_password"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Contraseña">
+
+        </EditText>
+
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+     <com.google.android.material.textfield.TextInputLayout
+         android:layout_width="match_parent"
+         android:layout_marginTop="10dp"
+         android:layout_margin="10dp"
+         app:passwordToggleEnabled="true"
+         android:layout_height="wrap_content">
+
+         <EditText
+             android:id="@+id/R_et_r_password"
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content"
+             android:hint="Repetir contraseña">
+
+         </EditText>
+
+
+     </com.google.android.material.textfield.TextInputLayout>
+
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/R_Btn_Registrar"
+            android:layout_width="match_parent"
+            android:layout_marginTop="10dp"
+            android:layout_marginStart="120dp"
+            android:layout_marginEnd="120dp"
+            android:backgroundTint="@color/blue_login"
+            android:layout_height="wrap_content"
+            android:text="Registrarse"
+            app:icon="@drawable/ic_registro"
+            app:iconGravity="textStart"/>
+
+
+    </LinearLayout>
+
+
+
+</RelativeLayout>

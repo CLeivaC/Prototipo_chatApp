@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="20dp"
+    tools:context=".Registro">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@drawable/fondo_login"
+        android:scaleType="centerCrop"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_marginTop="40dp"
+        android:textSize="28sp"
+        android:text="Login"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical">
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal">
+
+
+            <com.hbb20.CountryCodePicker
+                android:id="@+id/selector_codigo_pais_L"
+                android:layout_marginStart="5dp"
+                android:layout_marginTop="10dp"
+                app:passwordToggleEnabled="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <EditText
+                    android:id="@+id/L_et_telefono"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:hint="Telefono"
+                    android:inputType="phone">
+                </EditText>
+            </com.google.android.material.textfield.TextInputLayout>
+        </LinearLayout>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/L_enviar_otp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:backgroundTint="@color/blue_login"
+            android:text="Enviar código sms"
+            app:icon="@drawable/ic_sms"
+            app:iconGravity="textStart" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_margin="10dp"
+            android:layout_height="wrap_content">
+
+            <EditText
+                android:id="@+id/L_et_codigo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Codigo">
+
+            </EditText>
+
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_marginTop="10dp"
+            app:passwordToggleEnabled="true"
+            android:layout_margin="10dp"
+            android:layout_height="wrap_content">
+
+            <EditText
+                android:id="@+id/L_et_password"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Contraseña">
+
+            </EditText>
+
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/L_iniciar_sesion"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="30dp"
+            android:layout_marginTop="10dp"
+            android:backgroundTint="@color/blue_login"
+            android:text="Iniciar sesion"
+            app:icon="@drawable/ic_user"
+            app:iconGravity="textStart" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+          android:gravity="center"
+            android:orientation="horizontal">
+
+            <TextView
+                android:text="¿No tienes cuenta?"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+            <TextView
+                android:id="@+id/L_registro"
+                android:layout_marginStart="10dp"
+                android:textStyle="bold"
+                android:text="Registrate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+</RelativeLayout>

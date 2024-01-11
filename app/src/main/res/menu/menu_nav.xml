@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/chatF"
+        android:title="Chats"
+        android:icon="@drawable/ic_chat">
+
+    </item>
+    <item
+        android:id="@+id/contactosF"
+        android:title="Contactos"
+        android:icon="@drawable/ic_contactos">
+
+    </item>
+    <item
+        android:id="@+id/juegosF"
+        android:title="Juegos"
+        android:icon="@drawable/ic_juegos">
+
+    </item>
+    <item
+        android:id="@+id/PerfilF"
+        android:title="Perfil"
+        android:icon="@drawable/ic_perfil">
+
+    </item>
+</menu>

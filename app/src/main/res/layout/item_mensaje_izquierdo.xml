@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="290dp"
+    android:layout_height="wrap_content">
+
+    <!--Imagen de perfil del usuario el cual nos envía un mensaje-->
+    <ImageView
+        android:id="@+id/imagen_perfil_mensaje"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="3dp"
+        android:layout_marginStart="5dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/ic_perfil_mensaje" />
+
+    <!--Visualizar el mensaje-->
+    <TextView
+        android:id="@+id/TXT_ver_mensaje"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="5dp"
+        android:layout_marginTop="3dp"
+        android:layout_toEndOf="@+id/imagen_perfil_mensaje"
+        android:background="@drawable/background_izquierdo"
+        android:padding="8dp"
+        android:text="@string/TXT_ver_mensaje"
+        android:textSize="18sp" />
+
+    <!--Imagen enviada-->
+
+    <ImageView
+        android:id="@+id/imagen_enviada_izquierdo"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_marginStart="5dp"
+        android:layout_toEndOf="@+id/imagen_perfil_mensaje"
+        android:visibility="gone" />
+
+
+    <!--Si el mensaje se ha visto-->
+    <TextView
+        android:id="@+id/TXT_mensaje_visto"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/TXT_ver_mensaje" />
+
+</RelativeLayout>

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="?android:attr/selectableItemBackground"
+    app:cardUseCompatPadding="true"
+    android:padding="0.2dp"
+    app:cardCornerRadius="10dp">
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:padding="5dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+
+        <ImageView
+            android:id="@+id/Item_imagen"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_item_usuario"
+            android:layout_width="50dp"
+            android:layout_height="50dp"/>
+
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/item_nombre_usuario"
+                android:text="@string/item_nombre_usuario"
+                android:layout_marginStart="10dp"
+                android:textStyle="bold"
+                android:textSize="18sp"
+                android:layout_gravity="start"
+                android:gravity="center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:id="@+id/item_numero_usuario"
+                android:text="@string/item_numero_usuario"
+                android:layout_marginStart="10dp"
+                android:layout_gravity="start"
+                android:gravity="center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+        </LinearLayout>
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>

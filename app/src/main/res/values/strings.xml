@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">Prototipo_chatApp</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="Nombre_usuario">Nombre de usuario</string>
+    <string name="item_nombre_usuario">Nombre de usuario</string>
+    <string name="item_numero_usuario">Numero de usuario</string>
+    
+    <!--Chat-->
+    <string name="N_usuario_chat">Nombre de usuario</string>
+    <string name="ET_mensaje">Escriba un mensaje</string>
+
+    <!--Item Chat-->
+    <string name="TXT_ver_mensaje">Hola ¿Cómo estás?</string>
+</resources>
