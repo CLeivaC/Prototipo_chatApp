@@ -1,15 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/fragment_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".Fragmentos.ContactosFragment">
 
+
+    <!-- LinearLayout para el campo de búsqueda y el botón -->
+    <LinearLayout
+        android:id="@+id/searchLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="8dp">
+
+        <!-- Campo de búsqueda -->
+        <EditText
+            android:id="@+id/buscador"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="Buscar"
+            android:inputType="text"/>
+
+        <!-- Botón para agregar amigos -->
+        <Button
+            android:id="@+id/botonAgregar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="+"/>
+
+    </LinearLayout>
+
+    <!-- RecyclerView para mostrar la lista de usuarios -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/RV_usuarios"
         tools:listitem="@layout/item_usuario"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_below="@id/searchLayout">
 
     </androidx.recyclerview.widget.RecyclerView>
 

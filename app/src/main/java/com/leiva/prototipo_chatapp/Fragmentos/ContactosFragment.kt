@@ -6,11 +6,15 @@ import android.content.pm.PackageManager
 import android.database.Cursor
 import android.os.Bundle
 import android.provider.ContactsContract
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.EditText
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -23,6 +27,7 @@ import com.google.firebase.database.ValueEventListener
 import com.leiva.prototipo_chatapp.Adaptador.AdaptadorContactos
 import com.leiva.prototipo_chatapp.Modelo.Usuario
 import com.leiva.prototipo_chatapp.R
+import java.util.Locale
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -116,7 +121,10 @@ private val READ_CONTACTS_PERMISSION_REQUEST_CODE = 1
     private var usuarioLista: List<Usuario>?=null
     private var rvUsuarios: RecyclerView?=null
 
-override fun onCreateView(
+    private lateinit var buscadorEditText: EditText
+    private lateinit var botonAgregar:Button
+
+    override fun onCreateView(
     inflater: LayoutInflater, container: ViewGroup?,
     savedInstanceState: Bundle?
 ): View? {
@@ -129,8 +137,46 @@ override fun onCreateView(
 
     // Solicitar permiso READ_CONTACTS
     solicitarPermisoContactos()
+
+        buscadorEditText = view.findViewById(R.id.buscador)
+        buscadorEditText.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(charSequence: CharSequence?, start: Int, before: Int, count: Int) {}
+
+            override fun onTextChanged(charSequence: CharSequence?, start: Int, before: Int, count: Int) {
+                // Filtrar la lista de contactos en función del texto de búsqueda
+                val searchText = charSequence.toString().toLowerCase(Locale.getDefault())
+                val filteredList = usuarioLista?.filter {
+                    it.getN_Usuario()!!.toLowerCase(Locale.getDefault()).contains(searchText) ||
+                            it.getTelefono()!!.toLowerCase(Locale.getDefault()).contains(searchText)
+                }
+                // Actualizar el RecyclerView con la lista filtrada
+                usuarioAdaptador?.filtrarLista(filteredList)
+            }
+
+            override fun afterTextChanged(editable: Editable?) {}
+        })
+
+        // Obtener referencia al botón
+        botonAgregar = view.findViewById(R.id.botonAgregar)
+
+        // Agregar listener al botón para abrir AgregarContactoFragment
+        botonAgregar.setOnClickListener {
+            abrirAgregarContactoFragment()
+        }
+
+
     return view
 }
+    private fun abrirAgregarContactoFragment() {
+        val agregarContactoFragment = AgregarContactoFragment()
+
+        // Reemplazar el fragment actual por AgregarContactoFragment
+        val transaction = requireActivity().supportFragmentManager.beginTransaction()
+        transaction.replace(R.id.fragment_container, agregarContactoFragment)
+        transaction.addToBackStack(null)
+        transaction.commit()
+    }
+
 
     private fun getDeviceContacts(context: Context): List<String> {
         val contactsList = mutableListOf<String>()
@@ -280,5 +326,37 @@ private fun verificarContactosEnFirebase(contactos: List<String>) {
         }
     })
 }
+fun verificarContactoEnFirebase(telefono: String) {
+    val reference = FirebaseDatabase.getInstance().reference.child("usuarios")
+
+    reference.orderByChild("telefono").equalTo(telefono)
+        .addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val usuariosCoincidentes = mutableListOf<Usuario>()
+
+                for (sh in snapshot.children) {
+                    val usuario: Usuario? = sh.getValue(Usuario::class.java)
+                    val numeroTelefonoUsuario = usuario?.getTelefono()
+
+                    if (numeroTelefonoUsuario != null && numeroTelefonoUsuario == telefono) {
+                        usuariosCoincidentes.add(usuario!!)
+                    }
+                }
+
+                (usuarioLista as ArrayList<Usuario>).clear()
+                (usuarioLista as ArrayList<Usuario>).addAll(usuariosCoincidentes)
+
+                activity?.runOnUiThread {
+                    usuarioAdaptador?.filtrarLista(usuarioLista)
+                    usuarioAdaptador?.notifyDataSetChanged()
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.e("ContactosFragment", "Error al verificar el teléfono en la base de datos: $error")
+            }
+        })
+}
+
 // ... (resto del código)
 }

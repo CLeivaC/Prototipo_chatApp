@@ -6,7 +6,7 @@
     <string name="Nombre_usuario">Nombre de usuario</string>
     <string name="item_nombre_usuario">Nombre de usuario</string>
     <string name="item_numero_usuario">Numero de usuario</string>
-    
+
     <!--Chat-->
     <string name="N_usuario_chat">Nombre de usuario</string>
     <string name="ET_mensaje">Escriba un mensaje</string>
