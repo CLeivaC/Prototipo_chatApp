@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.database.FirebaseDatabase
 import com.leiva.prototipo_chatapp.Modelo.Chat
 import com.leiva.prototipo_chatapp.R
 
@@ -42,6 +43,7 @@ class AdaptadorChat(contexto: Context,chatLista: List<Chat>,imagenUrl: String,im
         var TXT_ver_mensaje: TextView?=null
         var imagen_enviada_izquierdo : ImageView?=null
         var TXT_mensaje_visto:TextView?=null
+        var estadoMensaje:ImageView?=null
 
 
         /*Vistas de item mensaje derecho*/
@@ -54,7 +56,7 @@ class AdaptadorChat(contexto: Context,chatLista: List<Chat>,imagenUrl: String,im
             TXT_mensaje_visto = itemView.findViewById(R.id.TXT_mensaje_visto)
             imagen_enviada_derecha = itemView.findViewById(R.id.imagen_enviada_derecha)
             imagen_perfil_mensaje_derecho = itemView.findViewById(R.id.imagen_perfil_mensaje_derecho)
-
+            estadoMensaje = itemView.findViewById(R.id.estadoMensaje)
 
         }
     }
@@ -120,6 +122,19 @@ class AdaptadorChat(contexto: Context,chatLista: List<Chat>,imagenUrl: String,im
         holder.TXT_ver_mensaje!!.text = chat.getMensaje()
     }
 
+
+        // Cambiar la imagen del indicador de visto a ic_checkazul si el mensaje ha sido visto por el receptor
+       if (chat.isVisto()) {
+            holder.estadoMensaje?.setImageResource(R.drawable.ic_checkazul)
+       }else{
+           holder.estadoMensaje?.setImageResource(R.drawable.ic_checkgris)
+       }
+
+
+
+
+
+
     }
 
     override fun getItemViewType(position: Int): Int {
@@ -129,5 +144,8 @@ class AdaptadorChat(contexto: Context,chatLista: List<Chat>,imagenUrl: String,im
             0
         }
     }
+
+
+
 
 }

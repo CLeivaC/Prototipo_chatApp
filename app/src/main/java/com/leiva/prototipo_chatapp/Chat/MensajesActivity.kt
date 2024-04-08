@@ -34,9 +34,12 @@ import com.leiva.prototipo_chatapp.Adaptador.AdaptadorChat
 import com.leiva.prototipo_chatapp.Modelo.Chat
 import com.leiva.prototipo_chatapp.Modelo.Usuario
 import com.leiva.prototipo_chatapp.R
+import com.leiva.prototipo_chatapp.Utilidades.UtilidadesChat
 
 class MensajesActivity : AppCompatActivity() {
 
+
+    private var receptorActivo: Boolean = false
 
     private lateinit var imagen_perfil_chat: ImageView
 
@@ -65,6 +68,9 @@ class MensajesActivity : AppCompatActivity() {
         obtenerUID()
         leerInfoUsuarioSeleccionado()
         initListeners()
+
+        abrirConversacion()
+
     }
 
     private fun initComponents(){
@@ -98,7 +104,7 @@ class MensajesActivity : AppCompatActivity() {
         }
 
         IB_Adjuntar.setOnClickListener {
-                abrirGaleria()
+            abrirGaleria()
         }
     }
 
@@ -108,35 +114,29 @@ class MensajesActivity : AppCompatActivity() {
         uid_usuario_seleccionado = intent.getStringExtra("uid_usuario").toString()
     }
 
-    private fun leerInfoUsuarioSeleccionado(){
+    private fun leerInfoUsuarioSeleccionado() {
         val reference = FirebaseDatabase.getInstance().reference.child("usuarios").child(uid_usuario_seleccionado)
         var imagenReceptor:String?=null
-        reference.addValueEventListener(object : ValueEventListener{
+        val contentResolver = contentResolver
+        reference.addListenerForSingleValueEvent(object : ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
-               val usuario: Usuario? = snapshot.getValue(Usuario::class.java)
-                N_usuario_chat.text = usuario!!.getN_Usuario()
+                val usuario: Usuario? = snapshot.getValue(Usuario::class.java)
+                N_usuario_chat.text = UtilidadesChat.obtenerNombreDesdeTelefono(contentResolver,usuario!!.getTelefono()!!)
                 imagenReceptor = usuario.getImagen().toString()
                 Glide.with(applicationContext).load(usuario.getImagen()).placeholder(R.drawable.ic_item_usuario).into(imagen_perfil_chat)
-
                 obtenerImagenUsuarioActual(object : ImagenUsuarioCallback {
                     override fun onImagenObtenida(imagen: String) {
-                        Log.d("Imagen", "urlEMisorFUncion: $imagen")
-                        RecuperarMensajes(firebaseUser!!.uid,uid_usuario_seleccionado,imagenReceptor,imagen)
+                        RecuperarMensajes(firebaseUser!!.uid, uid_usuario_seleccionado, imagenReceptor, imagen)
                     }
                 })
-
             }
-
             override fun onCancelled(error: DatabaseError) {
                 //TODO("Not yet implemented")
             }
-
         })
-
-
     }
 
-    private fun RecuperarMensajes(EmisorUid: String, ReceptorUid: String,ReceptorImagen: String?,ImagenActual:String?) {
+    private fun RecuperarMensajes(EmisorUid: String, ReceptorUid: String, ReceptorImagen: String?, ImagenActual: String?) {
         chatList = ArrayList()
         val reference = FirebaseDatabase.getInstance().reference.child("chats")
         reference.addValueEventListener(object : ValueEventListener{
@@ -146,20 +146,20 @@ class MensajesActivity : AppCompatActivity() {
                     val chat = sn.getValue(Chat::class.java)
                     if(chat!!.getReceptor().equals(EmisorUid) && chat.getEmisor().equals(ReceptorUid)
                         || chat.getReceptor().equals(ReceptorUid) && chat.getEmisor().equals(EmisorUid)) {
-
                         (chatList as ArrayList<Chat>).add(chat)
                     }
-
-
                 }
-                chatAdapter = AdaptadorChat(this@MensajesActivity,(chatList as ArrayList<Chat>),ReceptorImagen!!,ImagenActual!!)
+                chatAdapter = AdaptadorChat(this@MensajesActivity, (chatList as ArrayList<Chat>), ReceptorImagen!!, ImagenActual!!)
                 RV_chats.adapter = chatAdapter
+
+                if (receptorActivo) {
+                    marcarMensajesComoLeidos()
+                }
             }
 
             override fun onCancelled(error: DatabaseError) {
-                TODO("Not yet implemented")
+                // Manejar errores de base de datos, si es necesario
             }
-
         })
     }
 
@@ -205,23 +205,21 @@ class MensajesActivity : AppCompatActivity() {
 
 
     private fun enviarMensaje(uid_emisor: String,uid_receptor:String,mensaje:String) {
-
         val reference = FirebaseDatabase.getInstance().reference
         val mensajeKey = reference.push().key
-
         val infoMensaje = HashMap<String,Any?>()
-
         infoMensaje["id_mensjae"] = mensajeKey
         infoMensaje["emisor"] = uid_emisor
         infoMensaje["receptor"] = uid_receptor
         infoMensaje["mensaje"] = mensaje
         infoMensaje["url"] = ""
+        infoMensaje["receptorActivo"]= false
         infoMensaje["visto"] = false
         reference.child("chats").child(mensajeKey!!).setValue(infoMensaje).addOnCompleteListener {task->
             if(task.isSuccessful){
+                marcarMensajesComoLeidos()
                 val listaMensajesEmisor = FirebaseDatabase.getInstance().reference.child("ListaMensajes")
                     .child(firebaseUser!!.uid).child(uid_usuario_seleccionado)
-
                 listaMensajesEmisor.addListenerForSingleValueEvent(object :ValueEventListener{
                     override fun onDataChange(snapshot: DataSnapshot) {
                         if(!snapshot.exists()){
@@ -232,14 +230,11 @@ class MensajesActivity : AppCompatActivity() {
                             .child(uid_usuario_seleccionado).child(firebaseUser!!.uid)
                         listaMensajesReceptor.child("uid").setValue(firebaseUser!!.uid)
                     }
-
                     override fun onCancelled(error: DatabaseError) {
-                        TODO("Not yet implemented")
+                        // Not implemented
                     }
-
                 })
             }
-
         }
     }
 
@@ -327,5 +322,40 @@ class MensajesActivity : AppCompatActivity() {
         }
     )
 
+    private fun marcarMensajesComoLeidos() {
+        val referenciaMensajes = FirebaseDatabase.getInstance().reference.child("chats")
+        referenciaMensajes.orderByChild("receptor").equalTo(firebaseUser!!.uid).addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                for (mensajeSnapshot in snapshot.children) {
+                    val mensaje = mensajeSnapshot.getValue(Chat::class.java)
+                    if (mensaje != null && mensaje.getEmisor() == uid_usuario_seleccionado) {
+                        // Marcar el mensaje como leído
+                        mensajeSnapshot.ref.child("visto").setValue(true)
+                    }
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                // Manejar errores de base de datos, si es necesario
+            }
+        })
+    }
+
+
+    private fun abrirConversacion() {
+        // Después de abrir la conversación, llamar a la función para marcar mensajes como leídos
+        marcarMensajesComoLeidos()
+
+    }
+
+    override fun onResume() {
+        super.onResume()
+        receptorActivo = true
+    }
+
+    override fun onPause() {
+        super.onPause()
+        receptorActivo = false
+    }
 
 }

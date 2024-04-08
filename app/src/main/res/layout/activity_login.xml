@@ -22,8 +22,8 @@
         android:text="Login"/>
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="391dp"
+        android:layout_height="711dp"
         android:gravity="center"
         android:orientation="vertical">
 
@@ -31,22 +31,23 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
             android:layout_marginTop="10dp"
+            android:gravity="center"
             android:orientation="horizontal">
 
 
             <com.hbb20.CountryCodePicker
                 android:id="@+id/selector_codigo_pais_L"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_marginStart="5dp"
                 android:layout_marginTop="10dp"
-                app:passwordToggleEnabled="true"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                app:passwordToggleEnabled="true" />
 
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
+
                 <EditText
                     android:id="@+id/L_et_telefono"
                     android:layout_width="match_parent"
@@ -54,6 +55,7 @@
                     android:layout_margin="10dp"
                     android:hint="Telefono"
                     android:inputType="phone">
+
                 </EditText>
             </com.google.android.material.textfield.TextInputLayout>
         </LinearLayout>
@@ -71,8 +73,8 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
-            android:layout_margin="10dp"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp">
 
             <EditText
                 android:id="@+id/L_et_codigo"
@@ -87,10 +89,10 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
-            android:layout_marginTop="10dp"
-            app:passwordToggleEnabled="true"
+            android:layout_height="wrap_content"
             android:layout_margin="10dp"
-            android:layout_height="wrap_content">
+            android:layout_marginTop="10dp"
+            app:passwordToggleEnabled="true">
 
             <EditText
                 android:id="@+id/L_et_password"
@@ -100,6 +102,26 @@
 
             </EditText>
 
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <CheckBox
+                    android:id="@+id/L_checkbox_recuerdame"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="false" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Recuérdame"
+                    android:textColor="@android:color/black"
+                    android:textSize="16sp" />
+
+            </LinearLayout>
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -118,20 +140,21 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-          android:gravity="center"
+            android:gravity="center"
             android:orientation="horizontal">
 
             <TextView
-                android:text="¿No tienes cuenta?"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content"
+                android:text="¿No tienes cuenta?" />
+
             <TextView
                 android:id="@+id/L_registro"
-                android:layout_marginStart="10dp"
-                android:textStyle="bold"
-                android:text="Registrate"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:text="Registrate"
+                android:textStyle="bold" />
 
         </LinearLayout>
 

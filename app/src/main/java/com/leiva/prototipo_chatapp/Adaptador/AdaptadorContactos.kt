@@ -24,7 +24,6 @@ class AdaptadorContactos (context: Context, listaUsuariosFiltrada: List<Usuario>
         this.listaUsuariosFiltrada = listaUsuariosFiltrada
     }
 
-    //private var listaUsuariosFiltrada: List<Usuario> = listaUsuarios
     fun filtrarLista(filtrada: List<Usuario>?) {
         listaUsuariosFiltrada = filtrada ?: emptyList()
         notifyDataSetChanged()

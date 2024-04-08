@@ -100,7 +100,7 @@ class Login : AppCompatActivity() {
                 // Verifica el resultado de comprobarNumero
                 if (resultado) {
                     // Si el número está verificado, llama a la función comprobarYEnviarSMS
-                   enviarSms(number)
+                    enviarSms(number)
                 } else {
                     // Si el número no está verificado, muestra un mensaje de Toast
                     Toast.makeText(applicationContext, "Teléfono no verificado", Toast.LENGTH_SHORT).show()
@@ -142,60 +142,37 @@ class Login : AppCompatActivity() {
     }
 
     private suspend fun comprobarNumeroBD(): Boolean {
-        // Obtén el número del EditText y elimina espacios en blanco al principio y al final
         number = L_et_telefono.text.trim().toString()
 
-        // Utiliza la función suspendCoroutine para convertir la lógica basada en callbacks de Firebase en una función suspendida
         return suspendCoroutine { continuation ->
-            // Verifica si el número no está vacío
             if (number.isNotEmpty()) {
-                // Formatea el número agregando el código de país seleccionado
                 number = "${selector_codigo_pais_L.selectedCountryCodeWithPlus}$number"
-
-                // Obtiene la referencia a la base de datos de Firebase
                 reference = FirebaseDatabase.getInstance().reference.child("usuarios")
 
-                // Agrega un ValueEventListener para escuchar cambios en los datos
-                reference!!.addValueEventListener(object : ValueEventListener {
+                reference!!.addListenerForSingleValueEvent(object : ValueEventListener {
                     override fun onDataChange(snapshot: DataSnapshot) {
                         var comprobar = false
 
-                        // Verifica si hay datos en el snapshot
                         if (snapshot.exists()) {
-                            // Itera a través de los hijos del snapshot (usuarios en este caso)
                             for (sh in snapshot.children) {
-                                // Obtiene un objeto Usuario a partir de los datos del snapshot
                                 val usuario: Usuario? = sh.getValue(Usuario::class.java)
 
-
-
-                                // Compara el número actual con el número del usuario en el snapshot
                                 if (number == usuario!!.getTelefono().toString()) {
-                                    // Realiza la acción de enviar SMS
-                                    enviarSms(number)
-                                    // Establece la variable de comprobación como verdadera
                                     comprobar = true
-
-                                    // Sale del bucle porque ya encontró una coincidencia
                                     break
                                 }
                             }
                         }
 
-                        // Responde a la continuación con el resultado de la comprobación (return en courutines)
+                        // Resuelve la continuación solo una vez al final del onDataChange
                         continuation.resume(comprobar)
-                        if(comprobar){
-                            enviarSms(number)
-                        }
                     }
 
                     override fun onCancelled(error: DatabaseError) {
-                        // Si hay un error en la consulta, responde a la continuación con la excepción
                         continuation.resumeWithException(error.toException())
                     }
                 })
             } else {
-                // Si el número está vacío, responde a la continuación con false (return en courutines)
                 continuation.resume(false)
             }
         }

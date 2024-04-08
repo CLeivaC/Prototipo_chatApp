@@ -13,4 +13,14 @@
 
     <!--Item Chat-->
     <string name="TXT_ver_mensaje">Hola ¿Cómo estás?</string>
+
+    <string name="P_n_usuario">Nombre de usuario</string>
+    <string name="P_telefono">Telefono</string>
+    <string name="P_guardar">Guardar</string>
+    <string-array name="estados">
+        <item>En línea</item>
+        <item>Ausente</item>
+        <item>Desconectado</item>
+    </string-array>
+
 </resources>

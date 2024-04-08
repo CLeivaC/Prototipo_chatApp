@@ -47,4 +47,15 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"/>
+
+    <ImageView
+        android:id="@+id/estadoMensaje"
+        android:layout_width="10dp"
+        android:layout_height="10dp"
+        android:src="@drawable/ic_checkgris"
+        android:layout_below="@id/TXT_ver_mensaje"
+        android:layout_alignParentEnd="true"
+        android:layout_marginRight="45dp">
+
+    </ImageView>
 </RelativeLayout>

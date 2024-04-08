@@ -8,6 +8,7 @@ class Chat {
         private var mensaje : String = ""
         private var url : String = ""
         private var visto = false
+        private var receptorActivo: Boolean = false
 
         constructor()
 
@@ -18,7 +19,8 @@ class Chat {
             mensaje: String,
             url: String,
             visto: Boolean,
-            imagenEmisorUrl: String
+            imagenEmisorUrl: String,
+            receptorActivo: Boolean
         ) {
             this.id_mensaje = id_mensaje
             this.emisor = emisor
@@ -26,6 +28,7 @@ class Chat {
             this.mensaje = mensaje
             this.url = url
             this.visto = visto
+            this.receptorActivo = receptorActivo
         }
 
         //getters y setters
@@ -76,4 +79,19 @@ class Chat {
         fun setIsVisto(visto : Boolean?){
             this.visto = visto!!
         }
+
+
+
+
+    // Getters y setters para receptorActivo
+    fun isReceptorActivo(): Boolean {
+        return receptorActivo
+    }
+
+    fun setReceptorActivo(receptorActivo: Boolean) {
+        this.receptorActivo = receptorActivo
+    }
+
+
+
 }
