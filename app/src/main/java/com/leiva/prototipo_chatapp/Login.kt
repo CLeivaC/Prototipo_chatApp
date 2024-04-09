@@ -1,9 +1,12 @@
 package com.leiva.prototipo_chatapp
 
 import android.content.Intent
+import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.preference.PreferenceManager
 import android.util.Log
+import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
@@ -41,7 +44,8 @@ class Login : AppCompatActivity() {
     private lateinit var L_et_password: EditText
     private lateinit var L_iniciar_sesion: MaterialButton
     private lateinit var L_registro: TextView
-
+    private lateinit var sharedPreferences: SharedPreferences
+    private lateinit var checkBoxRecuerdame: CheckBox
     private lateinit var auth: FirebaseAuth
     var reference: DatabaseReference?=null
 
@@ -55,6 +59,7 @@ class Login : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
         initComponents()
+        inicializarCheckBoxRecuerdame()
         initListeners()
 
 
@@ -74,12 +79,13 @@ class Login : AppCompatActivity() {
             }
 
         }
-
+        auth = FirebaseAuth.getInstance()
 
     }
 
     private fun initComponents(){
         selector_codigo_pais_L = findViewById(R.id.selector_codigo_pais_L)
+        selector_codigo_pais_L.setDefaultCountryUsingPhoneCode(34)
         L_et_telefono = findViewById(R.id.L_et_telefono)
         L_enviar_otp = findViewById(R.id.L_enviar_otp)
         L_et_codigo = findViewById(R.id.L_et_codigo)
@@ -90,6 +96,8 @@ class Login : AppCompatActivity() {
     }
 
     private fun initListeners(){
+
+
 
         L_enviar_otp.setOnClickListener {
             // Utiliza una coroutine para manejar la lógica asíncrona
@@ -107,6 +115,12 @@ class Login : AppCompatActivity() {
                 }
             }
         }
+
+        checkBoxRecuerdame.setOnCheckedChangeListener { buttonView, isChecked ->
+            // Guarda el estado seleccionado en las preferencias compartidas
+            sharedPreferences.edit().putBoolean("recordar_sesion", isChecked).apply()
+        }
+
         L_registro.setOnClickListener {
             val intent = Intent(this@Login,Registro::class.java)
             startActivity(intent)
@@ -138,6 +152,8 @@ class Login : AppCompatActivity() {
 
 
         }
+
+
 
     }
 
@@ -259,5 +275,30 @@ class Login : AppCompatActivity() {
         return Base64.getEncoder().encodeToString(bytes)
     }
 
+    private fun inicializarCheckBoxRecuerdame() {
+        // Inicializa la preferencia compartida
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
+
+        // Inicializa el CheckBox
+        checkBoxRecuerdame = findViewById(R.id.L_checkbox_recuerdame)
+
+        // Recupera el valor de la preferencia compartida y actualiza el estado del CheckBox
+        val recordarSesion = sharedPreferences.getBoolean("recordar_sesion", false)
+        checkBoxRecuerdame.isChecked = recordarSesion
+    }
+    //Permanecer sesion abierto
+    override fun onStart() {
+        super.onStart()
+
+        // Verifica si el usuario ya está autenticado
+        val currentUser = auth.currentUser
+        val recordarSesion = sharedPreferences.getBoolean("recordar_sesion", false)
+
+        if (recordarSesion && currentUser != null) {
+            // Si "Recuérdame" está marcado y hay un usuario autenticado, redirige a la actividad principal
+            startActivity(Intent(this, MainActivity::class.java))
+            finish()
+        }
+    }
 
 }

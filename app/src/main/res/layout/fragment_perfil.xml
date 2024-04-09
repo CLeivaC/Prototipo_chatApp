@@ -1,119 +1,135 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".Fragmentos.PerfilFragment">
 
-    <!-- Fondo de perfil -->
-    <ImageView
-        android:id="@+id/fondo_perfil_image"
-        android:scaleType="centerCrop"
-        android:src="@drawable/fondo_perfil"
-        android:layout_width="match_parent"
-        android:layout_height="220dp"/>
-
-    <!-- Imagen P_imagen -->
-    <ImageView
-        android:id="@+id/P_imagen"
-        android:layout_width="70dp"
-        android:layout_height="70dp"
-        android:layout_marginEnd="15dp"
-        android:layout_marginBottom="-35dp"
-        android:background="#354f60"
-        android:src="@drawable/imagen"
-        android:layout_alignBottom="@id/fondo_perfil_image"
-        android:layout_alignEnd="@id/fondo_perfil_image"/>
-
-    <!-- Campo de texto para el nombre -->
-    <EditText
-        android:id="@+id/editTextNombre"
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Nombre"
-        android:textStyle="bold"
-        android:layout_below="@id/fondo_perfil_image"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="60dp"
-        android:layout_marginEnd="20dp"
-        android:layout_marginBottom="10dp"
-        android:padding="10dp"
-        android:inputType="text"
-        android:singleLine="true"
-        android:maxLines="1"/>
+        android:layout_margin="16dp"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="4dp">
 
-    <!-- Campo de texto para el apellido -->
-    <EditText
-        android:id="@+id/editTextApellido"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Apellido"
-        android:textStyle="bold"
-        android:layout_below="@id/editTextNombre"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginEnd="20dp"
-        android:layout_marginBottom="10dp"
-        android:padding="10dp"
-        android:inputType="text"
-        android:singleLine="true"
-        android:maxLines="1"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
 
-    <!-- Campo de texto para el teléfono -->
-    <EditText
-        android:id="@+id/editTextTelefono"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Teléfono"
-        android:textStyle="bold"
-        android:inputType="phone"
-        android:focusable="false"
-        android:focusableInTouchMode="false"
-        android:layout_below="@id/editTextApellido"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginEnd="20dp"
-        android:layout_marginBottom="10dp"
-        android:padding="10dp"/>
+            <!-- Fondo de perfil -->
+            <ImageView
+                android:id="@+id/fondo_perfil_image"
+                android:layout_width="match_parent"
+                android:layout_height="220dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/fondo_perfil" />
 
-    <!-- Campo de texto para el estado -->
-    <Spinner
-        android:id="@+id/spinnerEstado"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/editTextTelefono"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="15dp"
-        android:layout_marginEnd="20dp"
-        android:layout_marginBottom="10dp"
-        android:padding="10dp"/>/>
+            <!-- Imagen de perfil -->
+            <ImageView
+                android:id="@+id/P_imagen"
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                android:layout_gravity="right"
+                android:layout_marginRight="20dp"
+                android:layout_marginTop="-40dp"
+                android:background="#354f60"
+                android:src="@drawable/imagen" />
+
+            <!-- Campo de texto para el nombre -->
+            <EditText
+                android:id="@+id/editTextNombre"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Nombre"
+                android:textStyle="bold"
+                android:inputType="text"
+                android:singleLine="true"
+                android:maxLines="1" />
+
+            <!-- Campo de texto para el apellido -->
+            <EditText
+                android:id="@+id/editTextApellido"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Apellido"
+                android:textStyle="bold"
+                android:inputType="text"
+                android:singleLine="true"
+                android:maxLines="1" />
+
+            <!-- Campo de texto para el teléfono -->
+            <EditText
+                android:id="@+id/editTextTelefono"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Teléfono"
+                android:textStyle="bold"
+                android:inputType="phone"
+                android:focusable="false"
+                android:focusableInTouchMode="false"
+                />
+
+            <!-- Spinner para seleccionar el estado -->
+            <Spinner
+                android:id="@+id/spinnerEstado"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:entries="@array/estados"
+                android:layout_marginTop="10dp"/>
+
+            <!-- Spinner para seleccionar el género -->
+            <Spinner
+                android:id="@+id/spinnerGenero"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:entries="@array/genero_array"
+                android:layout_marginTop="10dp"/>
+
+            <!-- Spinner para seleccionar el país -->
+
+            <EditText
+                android:id="@+id/editTextInfoAdicional"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Información adicional"
+                android:textStyle="bold"
+                android:inputType="textMultiLine"
+                android:minLines="1" />
+
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
 
     <!-- Botón para guardar cambios -->
-    <Button
+    <!-- Botón para guardar cambios -->
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/P_guardar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="110dp"
+        android:layout_height="55dp"
         android:text="Guardar"
         android:textColor="#FFFFFF"
         android:layout_alignParentBottom="true"
+        android:layout_marginBottom="10dp"
+        android:layout_marginEnd="10dp"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="40dp"
-        android:layout_marginEnd="5dp"
-        android:backgroundTint="@null"
-        style="@style/Widget.AppCompat.Button"/>
+        android:backgroundTint="@color/blue_login"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
 
     <!-- Botón para cerrar sesión -->
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/btnCerrarSesion"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Cerrar Sesión"
+        android:layout_width="110dp"
+        android:layout_height="55dp"
+        android:text="CERRAR SESION"
         android:textColor="#FFFFFF"
         android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="30dp"
+        android:layout_marginBottom="10dp"
         android:layout_toEndOf="@id/P_guardar"
-        android:backgroundTint="@null"
-        style="@style/Widget.AppCompat.Button"/>
+        android:backgroundTint="@color/blue_login"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
+
 
 </RelativeLayout>

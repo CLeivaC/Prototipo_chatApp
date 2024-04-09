@@ -23,4 +23,18 @@
         <item>Desconectado</item>
     </string-array>
 
+    <string-array name="genero_array">
+        <item>Hombre</item>
+        <item>Mujer</item>
+    </string-array>
+
+    <string-array name="paises_array">
+        <item>España</item>
+        <item>China</item>
+        <!-- Agrega más países según necesites -->
+    </string-array>
+
+    <!-- Visualizar imagen -->
+
+    <string name="Btn_cerrar_v">Cerrar</string>
 </resources>

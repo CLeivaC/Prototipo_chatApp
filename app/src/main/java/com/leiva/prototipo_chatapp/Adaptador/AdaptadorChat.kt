@@ -8,6 +8,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
@@ -15,6 +16,7 @@ import androidx.appcompat.view.menu.MenuView.ItemView
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.github.chrisbanes.photoview.PhotoView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.FirebaseDatabase
@@ -139,14 +141,18 @@ class AdaptadorChat(
                     Log.d("Prueba", chat.getUrl().toString())
 
                     holder.imagen_enviada_derecha!!.setOnClickListener {
-                        val opciones = arrayOf<CharSequence>("Eliminar imagen", "Cancelar")
+                        val opciones = arrayOf<CharSequence>("Ver imagen completa","Eliminar imagen", "Cancelar")
                         val builder: AlertDialog.Builder =
                             AlertDialog.Builder(holder.itemView.context)
                         builder.setTitle("¿Qué desea realizar?")
                         builder.setItems(
                             opciones,
                             DialogInterface.OnClickListener { dialogInterface, i ->
-                                if (i == 0) {
+                                if(i == 0){
+                                    VisualizarImagen(chat.getUrl())
+                                }
+
+                                if (i == 1) {
                                     val mensajeId =
                                         chatLista[position].getId_Mensaje() // Obtener el ID del mensaje
                                     EliminarMensaje(
@@ -168,6 +174,21 @@ class AdaptadorChat(
                     Glide.with(contexto).load(chat.getUrl())
                         .placeholder(R.drawable.ic_imagen_enviada)
                         .into(holder.imagen_enviada_izquierdo!!)
+
+                    holder.imagen_enviada_izquierdo!!.setOnClickListener {
+                        val opciones = arrayOf<CharSequence>("Ver imagen completa","Cancelar")
+                        val builder: AlertDialog.Builder =
+                            AlertDialog.Builder(holder.itemView.context)
+                        builder.setTitle("¿Qué desea realizar?")
+                        builder.setItems(
+                            opciones,
+                            DialogInterface.OnClickListener { dialogInterface, i ->
+                                if(i == 0){
+                                    VisualizarImagen(chat.getUrl())
+                                }
+                            })
+                        builder.show()
+                    }
                 }
             }
 
@@ -218,6 +239,26 @@ class AdaptadorChat(
         }
     }
 
+
+    private fun VisualizarImagen(imagen:String?){
+        val Img_visualizar:PhotoView
+        val Btn_cerrar_v:Button
+
+        val dialog= Dialog(contexto)
+        dialog.setContentView(R.layout.visualizer_imagen_completa)
+        Img_visualizar =dialog.findViewById(R.id.Img_visualizar)
+        Btn_cerrar_v =dialog.findViewById(R.id.Btn_cerrar_v)
+
+        Glide.with(contexto).load(imagen).placeholder(R.drawable.ic_imagen_enviada).into(Img_visualizar)
+
+        Btn_cerrar_v.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        dialog.show()
+        dialog.setCanceledOnTouchOutside(false)
+
+    }
 
     private fun EliminarMensaje(mensajeId: String, holder: ViewHolder) {
         val reference = FirebaseDatabase.getInstance().reference.child("chats")
