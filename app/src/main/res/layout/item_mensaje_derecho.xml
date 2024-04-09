@@ -1,61 +1,82 @@
-<?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <!-- Imagen de perfil del usuario el cual nos envía un mensaje -->
+    <!-- Imagen de perfil del usuario que envía el mensaje -->
     <ImageView
-        android:src="@drawable/ic_perfil_mensaje"
         android:id="@+id/imagen_perfil_mensaje_derecho"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:layout_marginEnd="5dp"
-        android:scaleType="centerCrop"
         android:layout_marginTop="3dp"
+        android:layout_marginEnd="5dp"
         android:layout_alignParentEnd="true"
-        android:layout_alignParentTop="true"/>
-
-    <!-- Visualizar el mensaje -->
-    <TextView
-        android:id="@+id/TXT_ver_mensaje"
-        android:text="@string/TXT_ver_mensaje"
-        android:background="@drawable/background_derecho"
-        android:padding="8dp"
-        android:textSize="18sp"
-        android:layout_marginEnd="5dp"
-        android:layout_marginTop="3dp"
-        android:layout_marginStart="10dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_toStartOf="@+id/imagen_perfil_mensaje_derecho"/>
+        android:src="@drawable/ic_perfil_mensaje"
+        android:scaleType="centerCrop"/>
 
-    <!-- Imagen enviada -->
-    <ImageView
-        android:id="@+id/imagen_enviada_derecha"
-        android:layout_toStartOf="@+id/imagen_perfil_mensaje_derecho"
-        android:layout_marginEnd="10dp"
-        android:visibility="gone"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:layout_below="@+id/TXT_ver_mensaje"/>
-
-    <!-- Si el mensaje se ha visto -->
-    <TextView
-        android:id="@+id/TXT_mensaje_visto"
-        android:layout_below="@+id/TXT_ver_mensaje"
+    <!-- Contenedor del mensaje (texto o imagen) -->
+    <RelativeLayout
+        android:id="@+id/mensaje_container"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"/>
+        android:layout_toStartOf="@+id/imagen_perfil_mensaje_derecho"
+        android:layout_alignParentTop="true">
 
+        <!-- Mensaje de texto -->
+        <TextView
+            android:id="@+id/TXT_ver_mensaje"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="3dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="5dp"
+            android:padding="8dp"
+            android:text="@string/TXT_ver_mensaje"
+            android:textSize="18sp"
+            android:background="@drawable/background_derecho"/>
+
+        <!-- Imagen enviada -->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardView_imagen_enviada_derecha"
+            android:layout_width="250dp"
+            android:layout_height="250dp"
+            android:visibility="gone"
+            android:layout_marginRight="5dp"
+            android:layout_below="@id/TXT_ver_mensaje"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="8dp"
+            app:cardUseCompatPadding="true">
+
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/imagen_enviada_derecha"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                app:shapeAppearanceOverlay="@style/RoundedCorner" />
+
+            <com.google.android.material.imageview.ShapeableImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/border_black" />
+        </androidx.cardview.widget.CardView>
+    </RelativeLayout>
+
+    <!-- Estado del mensaje -->
     <ImageView
         android:id="@+id/estadoMensaje"
         android:layout_width="10dp"
         android:layout_height="10dp"
         android:src="@drawable/ic_checkgris"
-        android:layout_below="@id/TXT_ver_mensaje"
+        android:layout_below="@id/imagen_perfil_mensaje_derecho"
         android:layout_alignParentEnd="true"
-        android:layout_marginRight="45dp">
+        android:layout_marginRight="45dp"/>
 
-    </ImageView>
+    <!-- Si el mensaje se ha visto -->
+    <TextView
+        android:id="@+id/TXT_mensaje_visto"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/mensaje_container"
+        android:layout_alignParentEnd="true"/>
 </RelativeLayout>

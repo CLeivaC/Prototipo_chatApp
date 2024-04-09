@@ -68,7 +68,6 @@ class MensajesActivity : AppCompatActivity() {
         obtenerUID()
         leerInfoUsuarioSeleccionado()
         initListeners()
-
         abrirConversacion()
 
     }
@@ -87,7 +86,6 @@ class MensajesActivity : AppCompatActivity() {
         var linearLayoutManager = LinearLayoutManager(applicationContext)
         linearLayoutManager.stackFromEnd = true
         RV_chats.layoutManager = linearLayoutManager
-
 
 
     }
@@ -208,12 +206,11 @@ class MensajesActivity : AppCompatActivity() {
         val reference = FirebaseDatabase.getInstance().reference
         val mensajeKey = reference.push().key
         val infoMensaje = HashMap<String,Any?>()
-        infoMensaje["id_mensjae"] = mensajeKey
+        infoMensaje["id_mensaje"] = mensajeKey
         infoMensaje["emisor"] = uid_emisor
         infoMensaje["receptor"] = uid_receptor
         infoMensaje["mensaje"] = mensaje
         infoMensaje["url"] = ""
-        infoMensaje["receptorActivo"]= false
         infoMensaje["visto"] = false
         reference.child("chats").child(mensajeKey!!).setValue(infoMensaje).addOnCompleteListener {task->
             if(task.isSuccessful){
@@ -283,7 +280,8 @@ class MensajesActivity : AppCompatActivity() {
                         val infoMensajeImagen = HashMap<String,Any?>()
                         infoMensajeImagen["id_mensaje"] = idMensaje
                         infoMensajeImagen["emisor"] = firebaseUser!!.uid
-                        infoMensajeImagen["receptor"] = "Se ha enviado la imagen"
+                        infoMensajeImagen["mensaje"] = "Se ha enviado la imagen"
+                        infoMensajeImagen["receptor"] = uid_usuario_seleccionado
                         infoMensajeImagen["url"] = url
                         infoMensajeImagen["visto"] = false
 
