@@ -1,15 +1,18 @@
 package com.leiva.prototipo_chatapp
 
 
-import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
+import android.content.Context
+import android.content.SharedPreferences
 import android.os.Bundle
-import android.provider.ContactsContract.Data
-import android.view.MenuItem
-import android.widget.FrameLayout
+import android.util.Log
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.preferencesDataStore
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -23,13 +26,23 @@ import com.leiva.prototipo_chatapp.Fragmentos.ContactosFragment
 import com.leiva.prototipo_chatapp.Fragmentos.JuegosFragment
 import com.leiva.prototipo_chatapp.Fragmentos.PerfilFragment
 import com.leiva.prototipo_chatapp.Modelo.Usuario
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
+
+val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "user_preferences")
 
 class MainActivity : AppCompatActivity() {
 
-    private  lateinit var bottomNavigationView: BottomNavigationView
+    companion object {
+        const val PREFS_NAME = "UserPrefs"
+        const val USER_STATUS_KEY = "UserStatus"
+    }
 
-    var reference: DatabaseReference?=null
-    var firebaseUser: FirebaseUser?=null
+
+    private lateinit var bottomNavigationView: BottomNavigationView
+
+    var reference: DatabaseReference? = null
+    var firebaseUser: FirebaseUser? = null
     private lateinit var nombre_usuario: TextView
 
 
@@ -40,11 +53,9 @@ class MainActivity : AppCompatActivity() {
         replaceFrame(ChatFragment())
         navegacionFragmentos()
         obtenerDatos()
-
-
     }
 
-    private fun initComponents(){
+    private fun initComponents() {
         bottomNavigationView = findViewById(R.id.bottomNavigationView)
 
         val toolbar: Toolbar = findViewById(R.id.toolbarMain)
@@ -52,16 +63,18 @@ class MainActivity : AppCompatActivity() {
         supportActionBar!!.title = ""
 
         firebaseUser = FirebaseAuth.getInstance().currentUser
-        reference = FirebaseDatabase.getInstance().reference.child("usuarios").child(firebaseUser!!.uid)
+        reference =
+            FirebaseDatabase.getInstance().reference.child("usuarios").child(firebaseUser!!.uid)
         nombre_usuario = findViewById(R.id.Nombre_usuario)
+
     }
 
-    fun obtenerDatos(){
+    fun obtenerDatos() {
 
-        reference!!.addValueEventListener(object: ValueEventListener{
+        reference!!.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                if(snapshot.exists()){
-                    val usuario : Usuario? = snapshot.getValue(Usuario::class.java)
+                if (snapshot.exists()) {
+                    val usuario: Usuario? = snapshot.getValue(Usuario::class.java)
                     nombre_usuario.text = usuario!!.getN_Usuario()
                 }
             }
@@ -73,7 +86,7 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
-    private fun navegacionFragmentos(){
+    private fun navegacionFragmentos() {
         bottomNavigationView.setOnNavigationItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.chatF ->
@@ -101,6 +114,28 @@ class MainActivity : AppCompatActivity() {
         val fragmentTransaction = fragmentManager.beginTransaction()
         fragmentTransaction.replace(R.id.fragmentoMain, fragment)
             .commit()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        updateUserStatus("Oculto")
+    }
+
+    override fun onResume() {
+        super.onResume()
+        updateUserStatus("En línea")
+    }
+
+    private fun updateUserStatus(status: String) {
+        val userStatusMap = mapOf("estado" to status)
+        reference!!.updateChildren(userStatusMap)
+            .addOnSuccessListener {
+                // Operación de actualización exitosa
+            }
+            .addOnFailureListener { e ->
+                // Error al actualizar la base de datos
+                Log.e("MainActivity", "Error al actualizar el estado del usuario: $e")
+            }
     }
 
 

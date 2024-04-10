@@ -19,8 +19,7 @@
     <string name="P_guardar">Guardar</string>
     <string-array name="estados">
         <item>En línea</item>
-        <item>Ausente</item>
-        <item>Desconectado</item>
+        <item>Oculto</item>
     </string-array>
 
     <string-array name="genero_array">

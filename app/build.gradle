@@ -57,4 +57,10 @@ dependencies {
 
     implementation 'com.github.chrisbanes:PhotoView:2.3.0'
 
+    // Agrega la dependencia de DataStore
+    implementation 'androidx.datastore:datastore-preferences:1.0.0'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.0'
+    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.4.0'
+
+
 }

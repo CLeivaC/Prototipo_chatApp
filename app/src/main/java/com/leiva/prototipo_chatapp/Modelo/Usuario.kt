@@ -8,6 +8,8 @@ class Usuario {
         private var telefono : String = ""
         private var imagen : String = ""
         private var password: String = ""
+        private var estado:String = ""
+        private var estadoManual: Boolean = false
 
         constructor()
 
@@ -16,7 +18,8 @@ class Usuario {
             n_usuario: String,
             telefono: String,
             imagen: String,
-            password: String
+            password: String,
+            estado: String
 
         ) {
             this.uid = uid
@@ -24,6 +27,7 @@ class Usuario {
             this.telefono = telefono
             this.imagen = imagen
             this.password = password
+            this.estado=estado
         }
 
         fun getUid() : String?{
@@ -58,6 +62,22 @@ class Usuario {
         fun getPassword():String?{
             return password
         }
+
+    fun setEstado(estado:String){
+        this.estado=estado
+    }
+
+    fun getEstado():String{
+        return estado
+    }
+
+    fun getEstadoManual(): Boolean {
+        return estadoManual
+    }
+
+    fun setEstadoManual(estadoManual: Boolean) {
+        this.estadoManual = estadoManual
+    }
 
 
     }
