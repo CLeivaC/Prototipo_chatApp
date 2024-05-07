@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -8,7 +9,10 @@
     android:foreground="?android:attr/selectableItemBackground"
     app:cardUseCompatPadding="true"
     android:padding="0.2dp"
-    app:cardCornerRadius="10dp">
+    app:cardCornerRadius="10dp"
+    app:cardElevation="0dp"
+    app:cardBackgroundColor="@android:color/transparent"
+    tools:ignore="ExtraText"> <!-- Establecer el fondo transparente -->>
 
     <LinearLayout
         android:orientation="horizontal"
@@ -16,19 +20,46 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
 
-        <ImageView
-            android:id="@+id/Item_imagen"
-            android:scaleType="centerCrop"
-            android:src="@drawable/ic_item_usuario"
-            android:layout_width="50dp"
-            android:layout_height="50dp"/>
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/Item_imagen"
+                android:scaleType="centerCrop"
+                android:src="@drawable/ic_item_usuario"
+                android:layout_width="50dp"
+                app:shapeAppearanceOverlay="@style/RoundedImageView"
+                android:layout_height="50dp"/>
+
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/imagen_online"
+                android:layout_width="15dp"
+                android:layout_height="15dp"
+                android:background="#16A085"
+                android:layout_marginStart="40dp"
+                app:shapeAppearanceOverlay="@style/RoundedImageViewOffOn"
+                android:layout_marginTop="35dp"
+                android:visibility="gone"/>
+
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/imagen_offline"
+                android:layout_width="15dp"
+                android:layout_height="15dp"
+                app:shapeAppearanceOverlay="@style/RoundedImageViewOffOn"
+                android:background="#E74C3C"
+                android:layout_marginStart="40dp"
+                android:layout_marginTop="35dp"
+                android:visibility="gone"/>
+
+        </RelativeLayout>
 
 
         <LinearLayout
             android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginEnd="10dp">
 
             <TextView
                 android:id="@+id/item_nombre_usuario"
@@ -42,15 +73,45 @@
                 android:layout_height="wrap_content"/>
 
             <TextView
-                android:id="@+id/item_numero_usuario"
-                android:text="@string/item_numero_usuario"
+                android:id="@+id/TXT_ultimoMensaje"
+                android:textSize="20sp"
+                android:maxLines="1"
+                android:textColor="@color/gris"
                 android:layout_marginStart="10dp"
-                android:layout_gravity="start"
-                android:gravity="center"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
-
         </LinearLayout>
+
+
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/item_numero_mensajes"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center|end"
+        android:layout_gravity="end"
+        android:padding="5dp"
+        tools:text="10"
+        android:visibility="gone"
+        android:textAlignment="center"
+        tools:visibility="visible"
+        android:layout_marginEnd="15dp"
+        android:layout_marginTop="13dp"
+        android:textColor="@android:color/black"
+        android:background="@drawable/rounded_background"
+        android:textSize="16sp" />
+
+    <!-- Línea debajo del contenedor de la imagen -->
+    <View
+        android:id="@+id/line"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@android:color/darker_gray"
+        android:layout_marginStart="70dp"
+        android:layout_marginBottom="5dp"
+        android:visibility="gone"/> <!-- Ocultar la línea por defecto -->
+
+
 
 </androidx.cardview.widget.CardView>

@@ -19,7 +19,8 @@
         android:gravity="center"
         android:layout_marginTop="40dp"
         android:textSize="28sp"
-        android:text="Login"/>
+        android:text="Login"
+        android:textAppearance="@style/AppTheme.Light" />
 
     <LinearLayout
         android:layout_width="391dp"
@@ -120,7 +121,8 @@
                     android:layout_height="wrap_content"
                     android:text="Recuérdame"
                     android:textColor="@android:color/black"
-                    android:textSize="16sp" />
+                    android:textSize="16sp"
+                    android:textAppearance="@style/AppTheme.Light"/>
 
             </LinearLayout>
 
@@ -131,7 +133,7 @@
             android:id="@+id/L_iniciar_sesion"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="30dp"
+            android:layout_margin="10dp"
             android:layout_marginTop="10dp"
             android:backgroundTint="@color/blue_login"
             android:text="Iniciar sesion"
@@ -155,9 +157,22 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
                 android:text="Registrate"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:onClick="irARecuperarContrasena"
+                />
 
         </LinearLayout>
+
+        <!-- Aquí agregamos la frase de "Restablecer Contraseña" -->
+        <TextView
+            android:id="@+id/L_restablecer_contrasena"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="Olvidar contrasena"
+            android:textStyle="bold"
+            android:onClick="irARecuperarContrasena"
+            />
 
     </LinearLayout>
 

@@ -15,10 +15,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <ImageView
+            <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/imagen_perfil_chat"
                 android:src="@drawable/ic_imagen_chat"
                 android:scaleType="centerCrop"
+                app:shapeAppearanceOverlay="@style/RoundedImageView"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
                 android:layout_marginStart="10dp"/>

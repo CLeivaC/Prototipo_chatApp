@@ -22,6 +22,8 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.FirebaseDatabase
 import com.leiva.prototipo_chatapp.Modelo.Chat
 import com.leiva.prototipo_chatapp.R
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 class AdaptadorChat(
     contexto: Context,
@@ -49,12 +51,14 @@ class AdaptadorChat(
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         /*Vistas de item mensaje izquierdo*/
         var imagen_perfil_mensaje: ImageView? = null
-
+        var textViewHoraMensaje : TextView?=null
+        var textViewHoraImagen:TextView?=null
 
         var TXT_ver_mensaje: TextView? = null
         var imagen_enviada_izquierdo: ImageView? = null
         var TXT_mensaje_visto: TextView? = null
         var estadoMensaje: ImageView? = null
+        var estadoMensajeImagen:ImageView?=null
 
 
         /*Vistas de item mensaje derecho*/
@@ -68,15 +72,17 @@ class AdaptadorChat(
             imagen_perfil_mensaje = itemView.findViewById(R.id.imagen_perfil_mensaje)
             TXT_ver_mensaje = itemView.findViewById(R.id.TXT_ver_mensaje)
             imagen_enviada_izquierdo = itemView.findViewById(R.id.imagen_enviada_izquierdo)
-            TXT_mensaje_visto = itemView.findViewById(R.id.TXT_mensaje_visto)
             imagen_enviada_derecha = itemView.findViewById(R.id.imagen_enviada_derecha)
             imagen_perfil_mensaje_derecho =
                 itemView.findViewById(R.id.imagen_perfil_mensaje_derecho)
             estadoMensaje = itemView.findViewById(R.id.estadoMensaje)
+            estadoMensajeImagen = itemView.findViewById(R.id.estadoMensajeImagen)
             cardView_imagen_enviada_derecha =
                 itemView.findViewById(R.id.cardView_imagen_enviada_derecha)
             cardView_imagen_enviada_izquierda =
                 itemView.findViewById(R.id.cardView_imagen_enviada_izquierda)
+            textViewHoraMensaje = itemView.findViewById(R.id.textViewHoraMensaje)
+            textViewHoraImagen = itemView.findViewById(R.id.textViewHoraImagen)
 
         }
     }
@@ -100,6 +106,10 @@ class AdaptadorChat(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
 
         val chat: Chat = chatLista[position]
+
+        val horaMensaje = SimpleDateFormat("HH:mm", Locale.getDefault()).format(chat.getHora())
+
+        holder.textViewHoraMensaje!!.text = horaMensaje
 
         try {
 
@@ -134,6 +144,14 @@ class AdaptadorChat(
                     //holder.estadoMensaje!!.visibility = View.GONE
                     holder.cardView_imagen_enviada_derecha!!.visibility = View.VISIBLE
                     holder.imagen_enviada_derecha!!.visibility = View.VISIBLE
+
+
+                    holder.textViewHoraImagen!!.visibility = View.VISIBLE
+                    holder.textViewHoraMensaje!!.visibility = View.GONE
+                    holder.textViewHoraImagen!!.text = horaMensaje
+
+                    holder.estadoMensaje!!.visibility = View.GONE
+                    holder.estadoMensajeImagen!!.visibility = View.VISIBLE
 
                     Glide.with(contexto).load(chat.getUrl())
                         .placeholder(R.drawable.ic_imagen_enviada)
@@ -174,6 +192,11 @@ class AdaptadorChat(
                     Glide.with(contexto).load(chat.getUrl())
                         .placeholder(R.drawable.ic_imagen_enviada)
                         .into(holder.imagen_enviada_izquierdo!!)
+
+
+                    holder.textViewHoraImagen!!.visibility = View.VISIBLE
+                    holder.textViewHoraMensaje!!.visibility = View.GONE
+                    holder.textViewHoraImagen!!.text = horaMensaje
 
                     holder.imagen_enviada_izquierdo!!.setOnClickListener {
                         val opciones = arrayOf<CharSequence>("Ver imagen completa","Cancelar")
@@ -224,8 +247,10 @@ class AdaptadorChat(
         // Cambiar la imagen del indicador de visto a ic_checkazul si el mensaje ha sido visto por el receptor
         if (chat.isVisto()) {
             holder.estadoMensaje?.setImageResource(R.drawable.ic_checkazul)
+            holder.estadoMensajeImagen?.setImageResource(R.drawable.ic_checkazul)
         } else {
             holder.estadoMensaje?.setImageResource(R.drawable.ic_checkgris)
+            holder.estadoMensajeImagen?.setImageResource(R.drawable.ic_checkgris)
         }
 
 

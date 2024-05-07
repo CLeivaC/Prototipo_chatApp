@@ -6,6 +6,7 @@
     <string name="Nombre_usuario">Nombre de usuario</string>
     <string name="item_nombre_usuario">Nombre de usuario</string>
     <string name="item_numero_usuario">Numero de usuario</string>
+    <string name="TXT_ultimoMensaje"></string>
 
     <!--Chat-->
     <string name="N_usuario_chat">Nombre de usuario</string>
@@ -36,4 +37,10 @@
     <!-- Visualizar imagen -->
 
     <string name="Btn_cerrar_v">Cerrar</string>
+
+
+    <string-array name="pregunta">
+        <item>¿Cuantos años tienes en el año 2024</item>
+        <item>¿Como se llama tu madre?</item>
+    </string-array>
 </resources>

@@ -1,17 +1,19 @@
-<?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="290dp"
     android:layout_height="wrap_content"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:paddingBottom="20dp">
 
     <!--Imagen de perfil del usuario el cual nos envía un mensaje-->
-    <ImageView
+    <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/imagen_perfil_mensaje"
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:layout_marginTop="3dp"
         android:layout_marginStart="5dp"
         android:scaleType="centerCrop"
+        app:shapeAppearanceOverlay="@style/RoundedImageView"
         android:src="@drawable/ic_perfil_mensaje" />
 
     <!--Visualizar el mensaje-->
@@ -28,17 +30,30 @@
         android:text="@string/TXT_ver_mensaje"
         android:textSize="18sp" />
 
-    <!--Imagen enviada-->
+    <!--Hora del mensaje-->
+    <TextView
+        android:id="@+id/textViewHoraMensaje"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/TXT_ver_mensaje"
+        android:layout_alignStart="@id/TXT_ver_mensaje"
+        android:layout_marginTop="2dp"
+        android:textSize="12sp"
+        android:singleLine="true"
+        android:ellipsize="none"
+        tools:text="12:34 PM"/>
 
+    <!--Imagen enviada-->
     <androidx.cardview.widget.CardView
-    android:id="@+id/cardView_imagen_enviada_izquierda"
-    android:layout_width="250dp"
-    android:layout_height="250dp"
-    android:layout_toEndOf="@+id/imagen_perfil_mensaje"
-    android:visibility="gone"
-    app:cardCornerRadius="12dp"
-    app:cardElevation="8dp"
-    app:cardUseCompatPadding="true">
+        android:id="@+id/cardView_imagen_enviada_izquierda"
+        android:layout_width="250dp"
+        android:layout_height="250dp"
+        android:layout_toEndOf="@+id/imagen_perfil_mensaje"
+        android:visibility="gone"
+        android:layout_marginLeft="7dp"
+        app:cardCornerRadius="12dp"
+        app:cardElevation="2dp"
+        app:cardUseCompatPadding="true">
 
         <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/imagen_enviada_izquierdo"
@@ -46,14 +61,19 @@
             android:layout_height="match_parent"
             android:scaleType="centerCrop"
             app:shapeAppearanceOverlay="@style/RoundedCorner" />
+
     </androidx.cardview.widget.CardView>
 
-
-    <!--Si el mensaje se ha visto-->
+    <!--Hora de la imagen-->
     <TextView
-        android:id="@+id/TXT_mensaje_visto"
+        android:id="@+id/textViewHoraImagen"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/TXT_ver_mensaje" />
+        android:layout_below="@id/cardView_imagen_enviada_izquierda"
+        android:layout_alignStart="@id/cardView_imagen_enviada_izquierda"
+        android:layout_marginTop="3dp"
+        android:text="12:34 PM"
+        android:visibility="gone"
+        android:textSize="12sp"/>
 
 </RelativeLayout>

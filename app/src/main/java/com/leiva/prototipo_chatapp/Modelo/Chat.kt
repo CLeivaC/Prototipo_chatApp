@@ -1,5 +1,7 @@
 package com.leiva.prototipo_chatapp.Modelo
 
+import android.widget.TextView
+
 class Chat {
 
         private var id_mensaje : String = ""
@@ -9,6 +11,7 @@ class Chat {
         private var url : String = ""
         private var visto = false
         private var receptorActivo: Boolean = false
+        private var hora: Long = 0
 
         constructor()
 
@@ -20,7 +23,8 @@ class Chat {
             url: String,
             visto: Boolean,
             imagenEmisorUrl: String,
-            receptorActivo: Boolean
+            receptorActivo: Boolean,
+            hora: Long
         ) {
             this.id_mensaje = id_mensaje
             this.emisor = emisor
@@ -29,6 +33,7 @@ class Chat {
             this.url = url
             this.visto = visto
             this.receptorActivo = receptorActivo
+            this.hora = hora
         }
 
         //getters y setters
@@ -90,6 +95,14 @@ class Chat {
 
     fun setReceptorActivo(receptorActivo: Boolean) {
         this.receptorActivo = receptorActivo
+    }
+
+    fun getHora(): Long {
+        return hora
+    }
+
+    fun setHora(hora: Long) {
+        this.hora = hora
     }
 
 

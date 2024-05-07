@@ -8,6 +8,27 @@ android {
     namespace 'com.leiva.prototipo_chatapp'
     compileSdk 34
 
+    testOptions {
+        unitTests {
+            // Para evitar el error "Method myPid in android.os.Process not mocked"
+            includeAndroidResources = true
+        }
+    }
+    testOptions {
+        unitTests {
+            // Para evitar el error "Method myPid in android.os.Process not mocked"
+            includeAndroidResources = true
+        }
+    }
+
+    // Configuración para evitar el error "No tests found for given includes"
+    tasks.withType(Test) {
+        include '**/*Test.class'
+        include '**/*Tests.class'
+        include '**/*TestSuite.class'
+        include '**/*TestCase.class'
+    }
+
     defaultConfig {
         applicationId "com.leiva.prototipo_chatapp"
         minSdk 26
@@ -42,7 +63,11 @@ dependencies {
     implementation 'com.google.firebase:firebase-auth-ktx:22.3.0'
     implementation 'com.google.firebase:firebase-storage-ktx:20.3.0'
     implementation 'com.google.firebase:firebase-storage'
-    testImplementation 'junit:junit:4.13.2'
+    implementation 'androidx.activity:activity:1.8.0'
+    implementation 'androidx.datastore:datastore-core:1.0.0'
+    implementation 'androidx.test.ext:junit-ktx:1.1.5'
+
+
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
     implementation("androidx.fragment:fragment-ktx:1.6.2")
@@ -62,5 +87,18 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.0'
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.4.0'
 
+
+    //Notificaciones
+    implementation 'com.google.firebase:firebase-messaging:23.1.2'
+    implementation 'com.squareup.retrofit2:retrofit:2.3.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.3.0'
+    implementation 'androidx.work:work-runtime-ktx:2.8.1'
+
+    //test
+    testImplementation 'junit:junit:4.13.2'
+    testImplementation "org.mockito:mockito-core:3.2.0"
+    testImplementation "org.mockito.kotlin:mockito-kotlin:3.2.0"
+    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.5.0"
+    testImplementation "org.robolectric:robolectric:4.6.1"
 
 }

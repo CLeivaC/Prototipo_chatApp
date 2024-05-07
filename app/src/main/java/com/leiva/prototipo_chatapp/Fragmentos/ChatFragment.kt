@@ -1,6 +1,8 @@
 package com.leiva.prototipo_chatapp.Fragmentos
 
+import android.media.session.MediaSession.Token
 import android.os.Bundle
+import android.text.TextUtils
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -12,6 +14,7 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import com.google.firebase.messaging.FirebaseMessaging
 import com.leiva.prototipo_chatapp.Adaptador.AdaptadorChat
 import com.leiva.prototipo_chatapp.Adaptador.AdaptadorContactos
 import com.leiva.prototipo_chatapp.Modelo.Chat
@@ -31,6 +34,7 @@ class ChatFragment : Fragment() {
     // RecyclerView para mostrar la lista de contactos
     private var recyclerView: RecyclerView? = null
 
+    var firebaseUser = FirebaseAuth.getInstance().currentUser
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -44,7 +48,25 @@ class ChatFragment : Fragment() {
         // Obtener la lista de contactos con los que has tenido una conversación
         obtenerListaContactos()
 
+        FirebaseMessaging.getInstance().token
+            .addOnCompleteListener { tarea->
+                if (tarea.isSuccessful){
+                    if (tarea.result !=null && !TextUtils.isEmpty(tarea.result)){
+                        val token : String = tarea.result!!
+                        ActualizarToken(token)
+                    }
+                }
+
+            }
+
         return view
+    }
+
+    private fun ActualizarToken(token: String) {
+
+        val reference = FirebaseDatabase.getInstance().reference.child("Tokens")
+        val token1 = com.leiva.prototipo_chatapp.Notificaciones.Token(token!!)
+        reference.child(firebaseUser!!.uid).setValue(token1)
     }
 
     private fun obtenerListaContactos() {
