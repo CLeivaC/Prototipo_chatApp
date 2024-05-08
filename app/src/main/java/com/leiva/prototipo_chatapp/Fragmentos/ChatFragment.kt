@@ -45,6 +45,12 @@ class ChatFragment : Fragment() {
         recyclerView = view.findViewById(R.id.recyclerView)
         recyclerView!!.layoutManager = LinearLayoutManager(context)
 
+        // Inicializar y configurar el adaptador de contactos
+        adaptadorContactos = AdaptadorContactos(requireContext(), listaContactos)
+
+        // Configurar el RecyclerView
+        recyclerView!!.adapter = adaptadorContactos
+
         // Obtener la lista de contactos con los que has tenido una conversación
         obtenerListaContactos()
 
@@ -75,12 +81,30 @@ class ChatFragment : Fragment() {
 
         referenciaListaMensajes.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
+                // Utilizar un HashMap temporal para evitar duplicados
+                val tempMap: MutableMap<String, Usuario> = mutableMapOf()
+
                 for (usuarioSnapshot in snapshot.children) {
-                    if(isAdded) {
+                    if (isAdded) {
                         val uidUsuario = usuarioSnapshot.key
                         if (uidUsuario != null) {
                             // Obtener detalles del usuario desde la base de datos
-                            cargarDetallesUsuario(uidUsuario)
+                            cargarDetallesUsuario(uidUsuario) { usuario ->
+                                // Agregar el usuario al HashMap temporal
+                                tempMap[usuario.getUid()] = usuario
+
+                                // Verificar si se han agregado todos los usuarios
+                                if (tempMap.size == snapshot.childrenCount.toInt()) {
+                                    // Limpiar la lista de contactos
+                                    listaContactos.clear()
+                                    // Agregar todos los usuarios del HashMap a la lista de contactos
+                                    listaContactos.addAll(tempMap.values)
+                                    // Ordenar la lista de contactos en función del tiempo del último mensaje
+                                    listaContactos.sortByDescending { it.ultimoMensajeTimestamp }
+                                    // Notificar al adaptador que los datos han cambiado
+                                    adaptadorContactos?.notifyDataSetChanged()
+                                }
+                            }
                         }
                     }
                 }
@@ -92,7 +116,7 @@ class ChatFragment : Fragment() {
         })
     }
 
-    private fun cargarDetallesUsuario(uidUsuario: String) {
+    private fun cargarDetallesUsuario(uidUsuario: String, callback: (Usuario) -> Unit) {
         val referenciaUsuario = FirebaseDatabase.getInstance().reference.child("usuarios").child(uidUsuario)
         val contentResolver = requireContext().contentResolver
 
@@ -101,13 +125,14 @@ class ChatFragment : Fragment() {
                 val usuario = dataSnapshot.getValue(Usuario::class.java)
                 val numeroTelefonoUsuario = usuario?.getTelefono()
                 if (usuario != null) {
-                    val nombreContacto = UtilidadesChat.obtenerNombreDesdeTelefono(contentResolver,numeroTelefonoUsuario!!)
-                    usuario?.setN_Usuario(nombreContacto)
+                    val nombreContacto = UtilidadesChat.obtenerNombreDesdeTelefono(contentResolver, numeroTelefonoUsuario!!)
+                    usuario.setN_Usuario(nombreContacto)
 
-                    // Agregar usuario a la lista de contactos
-                    listaContactos.add(usuario)
-                    // Actualizar el adaptador del RecyclerView
-                    adaptadorContactos?.notifyDataSetChanged()
+                    // Obtener el tiempo del último mensaje
+                    obtenerUltimoMensaje(uidUsuario) { ultimoMensajeTimestamp ->
+                        usuario.ultimoMensajeTimestamp = ultimoMensajeTimestamp
+                        callback(usuario)
+                    }
                 }
             }
 
@@ -117,13 +142,37 @@ class ChatFragment : Fragment() {
         })
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
 
-        // Inicializar y configurar el adaptador de contactos
-        adaptadorContactos = AdaptadorContactos(requireContext(), listaContactos)
+    private fun obtenerUltimoMensaje(uidUsuario: String, callback: (Long) -> Unit) {
+        val firebaseUser = FirebaseAuth.getInstance().currentUser
 
-        // Configurar el RecyclerView
-        recyclerView!!.adapter = adaptadorContactos
+        if (firebaseUser != null) {
+            val reference = FirebaseDatabase.getInstance().reference.child("chats")
+            reference.addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    var ultimoMensajeTimestamp = 0L
+
+                    for (dataSnapshot in snapshot.children) {
+                        val chat = dataSnapshot.getValue(Chat::class.java)
+                        if (chat != null) {
+                            if ((chat.getEmisor() == firebaseUser.uid && chat.getReceptor() == uidUsuario) ||
+                                (chat.getEmisor() == uidUsuario && chat.getReceptor() == firebaseUser.uid)) {
+                                val timestamp = chat.getHora()
+                                if (timestamp > ultimoMensajeTimestamp) {
+                                    ultimoMensajeTimestamp = timestamp
+                                }
+                            }
+                        }
+                    }
+
+                    callback(ultimoMensajeTimestamp)
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    // Manejar errores de base de datos
+                }
+            })
+        }
     }
+
 }

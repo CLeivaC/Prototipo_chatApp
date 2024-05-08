@@ -16,6 +16,8 @@ class Usuario {
     private var claroOscuro : Boolean?=null
     private var notificaciones : Boolean?=null
 
+    var ultimoMensajeTimestamp: Long = 0L
+
     constructor() {
 
     }
