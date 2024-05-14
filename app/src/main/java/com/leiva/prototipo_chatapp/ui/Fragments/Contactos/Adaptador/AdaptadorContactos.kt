@@ -1,8 +1,7 @@
-package com.leiva.prototipo_chatapp.Adaptador
+package com.leiva.prototipo_chatapp.ui.Fragments.Contactos.Adaptador
 
 import android.content.Context
 import android.content.Intent
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,26 +10,25 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
-import com.leiva.prototipo_chatapp.Chat.MensajesActivity
+import com.leiva.prototipo_chatapp.ui.Activities.Mensajes.MensajesActivity
 import com.leiva.prototipo_chatapp.Modelo.Chat
 import com.leiva.prototipo_chatapp.Modelo.Usuario
 import com.leiva.prototipo_chatapp.R
-import org.w3c.dom.Text
 
-class AdaptadorContactos (context: Context, listaUsuariosFiltrada: List<Usuario>): RecyclerView.Adapter<AdaptadorContactos.ViewHolder?>(){
+interface FragmentType {
+    fun isChatFragment(): Boolean
+}
+
+class AdaptadorContactos (context: Context, listaUsuariosFiltrada: List<Usuario>,private val fragmentType: FragmentType): RecyclerView.Adapter<AdaptadorContactos.ViewHolder?>(){
 
     private val context: Context
     private var listaUsuariosFiltrada: List<Usuario>
     var ultimoMensaje:String = ""
-    var ref = FirebaseDatabase.getInstance().reference.child("chats")
-    //var firebaseUser = FirebaseAuth.getInstance().currentUser
 
     init {
         this.context = context
@@ -57,7 +55,6 @@ class AdaptadorContactos (context: Context, listaUsuariosFiltrada: List<Usuario>
 
         init {
             nombre_usuario = itemView.findViewById(R.id.item_nombre_usuario)
-            //  numero_usuario = itemView.findViewById(R.id.item_numero_usuario)
             imagen_usuario = itemView.findViewById(R.id.Item_imagen)
             imagen_online = itemView.findViewById(R.id.imagen_online)
             imagen_offline= itemView.findViewById(R.id.imagen_offline)
@@ -94,18 +91,32 @@ class AdaptadorContactos (context: Context, listaUsuariosFiltrada: List<Usuario>
         }
 
         holder.nombre_usuario.text = usuario.getN_Usuario()
-        //holder.numero_usuario.text = usuario.getTelefono()
         Glide.with(context).load(usuario.getImagen()).placeholder(R.drawable.ic_item_usuario).into(holder.imagen_usuario)
 
         holder.itemView.setOnClickListener {
-            val intent = Intent(context,MensajesActivity::class.java)
+            val intent = Intent(context, MensajesActivity::class.java)
             //Enviamos el uid del usuario seleccionado
             intent.putExtra("uid_usuario",usuario.getUid())
             Toast.makeText(context,"El usuario seleccionado es: "+usuario.getN_Usuario(),Toast.LENGTH_SHORT).show()
             context.startActivity(intent)
         }
 
-        ObtenerUltimoMensje(usuario.getUid(),holder.TXT_ultimoMensaje)
+        val isChatFragment = fragmentType.isChatFragment()
+
+        // Si estamos en el ChatFragment, mostramos el último mensaje
+        if (isChatFragment) {
+            ObtenerUltimoMensje(usuario.getUid(), holder.TXT_ultimoMensaje)
+            obtenerNumeroMensajesNoLeidos(uidUsuarioActual,usuario.getUid()) { numeroMensajesNoLeidos ->
+                // Actualizar el valor del contador de mensajes no leídos en el adaptador
+                holder.item_numero_mensajes.text = if (numeroMensajesNoLeidos > 0) {numeroMensajesNoLeidos.toString()}  else ""
+                holder.item_numero_mensajes.visibility = if (numeroMensajesNoLeidos>0) View.VISIBLE else View.GONE
+            }
+        } else {
+            // Si estamos en el ContactosFragment, ocultamos el campo de último mensaje
+            holder.TXT_ultimoMensaje.visibility = View.GONE
+        }
+
+        //ObtenerUltimoMensje(usuario.getUid(),holder.TXT_ultimoMensaje)
 
         if(usuario.getOculto() == false){
             holder.imagen_online.visibility=View.VISIBLE
@@ -148,7 +159,7 @@ class AdaptadorContactos (context: Context, listaUsuariosFiltrada: List<Usuario>
             }
 
             override fun onCancelled(error: DatabaseError) {
-                // Manejar errores de base de datos si es necesario
+                // Manejar errores de base de datos
             }
         })
     }
@@ -163,7 +174,7 @@ class AdaptadorContactos (context: Context, listaUsuariosFiltrada: List<Usuario>
             // El usuario está autenticado, devolver su UID
             return usuarioActual.uid
         } else {
-            // El usuario no está autenticado, devolver una cadena vacía o manejar el caso según sea necesario
+            // El usuario no está autenticado
             return ""
         }
     }
@@ -195,7 +206,6 @@ class AdaptadorContactos (context: Context, listaUsuariosFiltrada: List<Usuario>
             }
 
             override fun onCancelled(error: DatabaseError) {
-                TODO("Not yet implemented")
             }
 
         })

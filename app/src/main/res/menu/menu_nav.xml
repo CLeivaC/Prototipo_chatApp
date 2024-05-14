@@ -14,12 +14,6 @@
 
     </item>
     <item
-        android:id="@+id/juegosF"
-        android:title="Juegos"
-        android:icon="@drawable/ic_juegos">
-
-    </item>
-    <item
         android:id="@+id/PerfilF"
         android:title="Perfil"
         android:icon="@drawable/ic_perfil">

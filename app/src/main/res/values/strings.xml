@@ -39,8 +39,9 @@
     <string name="Btn_cerrar_v">Cerrar</string>
 
 
+
     <string-array name="pregunta">
-        <item>¿Cuantos años tienes en el año 2024</item>
+        <item>¿Cuantos años tienes en el año 2024?</item>
         <item>¿Como se llama tu madre?</item>
     </string-array>
 </resources>

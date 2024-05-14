@@ -1,4 +1,4 @@
-package com.leiva.prototipo_chatapp.Adaptador
+package com.leiva.prototipo_chatapp.ui.Activities.Mensajes.Adaptador
 
 import android.app.AlertDialog
 import android.app.Dialog
@@ -8,11 +8,12 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.Button
+import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.view.menu.MenuView.ItemView
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -25,12 +26,12 @@ import com.leiva.prototipo_chatapp.R
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-class AdaptadorChat(
+class AdaptadorMensaje(
     contexto: Context,
     chatLista: List<Chat>,
     imagenUrl: String,
     imagenEmisorUrl: String
-) : RecyclerView.Adapter<AdaptadorChat.ViewHolder?>() {
+) : RecyclerView.Adapter<AdaptadorMensaje.ViewHolder?>() {
 
 
     private val contexto: Context
@@ -51,14 +52,13 @@ class AdaptadorChat(
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         /*Vistas de item mensaje izquierdo*/
         var imagen_perfil_mensaje: ImageView? = null
-        var textViewHoraMensaje : TextView?=null
-        var textViewHoraImagen:TextView?=null
+        var textViewHoraMensaje: TextView? = null
+        var textViewHoraImagen: TextView? = null
 
         var TXT_ver_mensaje: TextView? = null
         var imagen_enviada_izquierdo: ImageView? = null
-        var TXT_mensaje_visto: TextView? = null
         var estadoMensaje: ImageView? = null
-        var estadoMensajeImagen:ImageView?=null
+        var estadoMensajeImagen: ImageView? = null
 
 
         /*Vistas de item mensaje derecho*/
@@ -90,11 +90,11 @@ class AdaptadorChat(
     override fun onCreateViewHolder(parent: ViewGroup, posicion: Int): ViewHolder {
         return if (posicion == 1) {
             val view: View = LayoutInflater.from(contexto)
-                .inflate(com.leiva.prototipo_chatapp.R.layout.item_mensaje_derecho, parent, false)
+                .inflate(R.layout.item_mensaje_derecho, parent, false)
             ViewHolder(view)
         } else {
             val view: View = LayoutInflater.from(contexto)
-                .inflate(com.leiva.prototipo_chatapp.R.layout.item_mensaje_izquierdo, parent, false)
+                .inflate(R.layout.item_mensaje_izquierdo, parent, false)
             ViewHolder(view)
         }
     }
@@ -120,7 +120,6 @@ class AdaptadorChat(
 
         } catch (e: Exception) {
             e.printStackTrace()
-            // Maneja la excepción según tus necesidades
         }
 
         try {
@@ -132,7 +131,6 @@ class AdaptadorChat(
 
         } catch (e: Exception) {
             e.printStackTrace()
-            // Maneja la excepción según tus necesidades
         }
 
         try {
@@ -159,14 +157,18 @@ class AdaptadorChat(
                     Log.d("Prueba", chat.getUrl().toString())
 
                     holder.imagen_enviada_derecha!!.setOnClickListener {
-                        val opciones = arrayOf<CharSequence>("Ver imagen completa","Eliminar imagen", "Cancelar")
+                        val opciones = arrayOf<CharSequence>(
+                            "Ver imagen completa",
+                            "Eliminar imagen",
+                            "Cancelar"
+                        )
                         val builder: AlertDialog.Builder =
                             AlertDialog.Builder(holder.itemView.context)
                         builder.setTitle("¿Qué desea realizar?")
                         builder.setItems(
                             opciones,
                             DialogInterface.OnClickListener { dialogInterface, i ->
-                                if(i == 0){
+                                if (i == 0) {
                                     VisualizarImagen(chat.getUrl())
                                 }
 
@@ -199,14 +201,14 @@ class AdaptadorChat(
                     holder.textViewHoraImagen!!.text = horaMensaje
 
                     holder.imagen_enviada_izquierdo!!.setOnClickListener {
-                        val opciones = arrayOf<CharSequence>("Ver imagen completa","Cancelar")
+                        val opciones = arrayOf<CharSequence>("Ver imagen completa", "Cancelar")
                         val builder: AlertDialog.Builder =
                             AlertDialog.Builder(holder.itemView.context)
                         builder.setTitle("¿Qué desea realizar?")
                         builder.setItems(
                             opciones,
                             DialogInterface.OnClickListener { dialogInterface, i ->
-                                if(i == 0){
+                                if (i == 0) {
                                     VisualizarImagen(chat.getUrl())
                                 }
                             })
@@ -229,7 +231,7 @@ class AdaptadorChat(
                             DialogInterface.OnClickListener { dialogInterface, i ->
                                 if (i == 0) {
                                     val mensajeId = chatLista[position].getId_Mensaje()
-                                    Log.d("mensajeid",mensajeId.toString())
+                                    Log.d("mensajeid", mensajeId.toString())
                                     if (mensajeId != null) {
                                         EliminarMensaje(mensajeId, holder)
                                     }
@@ -265,16 +267,21 @@ class AdaptadorChat(
     }
 
 
-    private fun VisualizarImagen(imagen:String?){
-        val Img_visualizar:PhotoView
-        val Btn_cerrar_v:Button
-
-        val dialog= Dialog(contexto)
+    private fun VisualizarImagen(imagen: String?) {
+        val dialog = Dialog(contexto)
         dialog.setContentView(R.layout.visualizer_imagen_completa)
-        Img_visualizar =dialog.findViewById(R.id.Img_visualizar)
-        Btn_cerrar_v =dialog.findViewById(R.id.Btn_cerrar_v)
 
-        Glide.with(contexto).load(imagen).placeholder(R.drawable.ic_imagen_enviada).into(Img_visualizar)
+        val lp = WindowManager.LayoutParams()
+        lp.copyFrom(dialog.window?.attributes)
+        lp.width = WindowManager.LayoutParams.MATCH_PARENT
+        lp.height = WindowManager.LayoutParams.MATCH_PARENT
+        dialog.window?.attributes = lp
+
+        val Img_visualizar: PhotoView = dialog.findViewById(R.id.Img_visualizar)
+        val Btn_cerrar_v: ImageButton = dialog.findViewById(R.id.Btn_cerrar_v)
+
+        Glide.with(contexto).load(imagen).placeholder(R.drawable.ic_imagen_enviada)
+            .into(Img_visualizar)
 
         Btn_cerrar_v.setOnClickListener {
             dialog.dismiss()
@@ -282,7 +289,6 @@ class AdaptadorChat(
 
         dialog.show()
         dialog.setCanceledOnTouchOutside(false)
-
     }
 
     private fun EliminarMensaje(mensajeId: String, holder: ViewHolder) {

@@ -1,26 +1,18 @@
-package com.leiva.prototipo_chatapp
+package com.leiva.prototipo_chatapp.ui.Activities.AgregarContacto
 
 import android.app.Activity
 import android.content.ContentProviderOperation
-import android.content.Intent
 import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.Handler
 import android.provider.ContactsContract
 import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.content.ContextCompat
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
-import com.leiva.prototipo_chatapp.Fragmentos.ContactosFragment
-import com.leiva.prototipo_chatapp.Modelo.Usuario
+import com.leiva.prototipo_chatapp.R
 
 
 class AgregarContactoActivity : AppCompatActivity() {
@@ -47,24 +39,29 @@ class AgregarContactoActivity : AppCompatActivity() {
     }
 
     private fun initListeners(){
-        botonGuardar.setOnClickListener {
-            nombre = editTextNombre.text.toString()
-            telefono =editTextTelefono.text.toString()
+            botonGuardar.setOnClickListener {
+                nombre = editTextNombre.text.toString()
+                telefono = editTextTelefono.text.toString()
 
-            if (nombre.isNotEmpty() && telefono.isNotEmpty()) {
-                val permission = android.Manifest.permission.WRITE_CONTACTS
-                if (ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
-                    // Si no tienes el permiso, solicítalo al usuario
-                    ActivityCompat.requestPermissions(this, arrayOf(permission), WRITE_CONTACTS_PERMISSION_REQUEST_CODE)
+                if (nombre.isNotEmpty() && telefono.isNotEmpty()) {
+                    val permission = android.Manifest.permission.WRITE_CONTACTS
+                    if (ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
+                        // Si no tienes el permiso, solicítalo al usuario
+                        ActivityCompat.requestPermissions(this, arrayOf(permission), WRITE_CONTACTS_PERMISSION_REQUEST_CODE)
+                    } else {
+                        // Verificar si el número de teléfono contiene el prefijo internacional "+"
+                        if (!telefono.startsWith("+")) {
+                            // Si no contiene el prefijo "+", mostrar un mensaje al usuario
+                            Toast.makeText(this, "Por favor, incluye el prefijo internacional en el número de teléfono", Toast.LENGTH_SHORT).show()
+                            return@setOnClickListener // Salir de la función sin continuar
+                        }
+
+                        // Si ya tienes el permiso y el número de teléfono tiene el prefijo "+", intenta agregar el contacto
+                        agregarContactoEnAgenda(nombre, telefono)
+                    }
                 } else {
-                    // Si ya tienes el permiso, intenta agregar el contacto
-                    agregarContactoEnAgenda(nombre, telefono)
-
-
+                    Toast.makeText(this, "Completa todos los campos", Toast.LENGTH_SHORT).show()
                 }
-            } else {
-                Toast.makeText(this, "Completa todos los campos", Toast.LENGTH_SHORT).show()
-            }
         }
     }
 

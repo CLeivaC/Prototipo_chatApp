@@ -1,4 +1,4 @@
-package com.leiva.prototipo_chatapp
+package com.leiva.prototipo_chatapp.ui.Activities.RecovPassword
 
 import android.content.Intent
 import android.os.Bundle
@@ -23,10 +23,12 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.hbb20.CountryCodePicker
 import com.leiva.prototipo_chatapp.Modelo.Usuario
+import com.leiva.prototipo_chatapp.R
+import com.leiva.prototipo_chatapp.ui.Activities.Login.VerificationState
+import com.leiva.prototipo_chatapp.ui.Activities.Login.LoginActivity
 import java.security.MessageDigest
 import java.util.Base64
 import java.util.concurrent.TimeUnit
-import kotlin.math.log
 
 class RecuperarContrasena : AppCompatActivity() {
 
@@ -203,7 +205,7 @@ class RecuperarContrasena : AppCompatActivity() {
                                                             sharedPreferences.edit().putString("password", newPassword).apply()
 
                                                             // Cerrar y volver a abrir la aplicación
-                                                            val intent = Intent(applicationContext, Login::class.java)
+                                                            val intent = Intent(applicationContext, LoginActivity::class.java)
                                                             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
                                                             startActivity(intent)
                                                             finishAffinity() // Cierra todas las actividades de la aplicación

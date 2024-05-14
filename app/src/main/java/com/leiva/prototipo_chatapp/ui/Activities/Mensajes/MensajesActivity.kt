@@ -1,6 +1,5 @@
-package com.leiva.prototipo_chatapp.Chat
+package com.leiva.prototipo_chatapp.ui.Activities.Mensajes
 
-import android.app.Activity
 import android.app.ProgressDialog
 import android.content.ContentValues.TAG
 import android.content.Intent
@@ -13,7 +12,6 @@ import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
-import android.widget.Toolbar
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.contract.ActivityResultContracts
@@ -27,21 +25,17 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ServerValue
 import com.google.firebase.database.ValueEventListener
-import com.google.firebase.database.getValue
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageTask
 import com.google.firebase.storage.UploadTask
-import com.leiva.prototipo_chatapp.Adaptador.AdaptadorChat
-import com.leiva.prototipo_chatapp.Fragmentos.PerfilFragment
-import com.leiva.prototipo_chatapp.InfoPerfilChat
+import com.leiva.prototipo_chatapp.ui.Activities.Mensajes.Adaptador.AdaptadorMensaje
+import com.leiva.prototipo_chatapp.ui.Activities.InfoPerfilChat.InfoPerfilChatActivity
 import com.leiva.prototipo_chatapp.Modelo.Chat
 import com.leiva.prototipo_chatapp.Modelo.Contacto
 import com.leiva.prototipo_chatapp.Modelo.Usuario
-import com.leiva.prototipo_chatapp.MyApp
 import com.leiva.prototipo_chatapp.Notificaciones.APIService
 import com.leiva.prototipo_chatapp.Notificaciones.Client
 import com.leiva.prototipo_chatapp.Notificaciones.Data
@@ -50,11 +44,9 @@ import com.leiva.prototipo_chatapp.Notificaciones.Sender
 import com.leiva.prototipo_chatapp.Notificaciones.Token
 import com.leiva.prototipo_chatapp.R
 import com.leiva.prototipo_chatapp.Utilidades.UtilidadesChat
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Response
-import javax.security.auth.callback.Callback
 
 class MensajesActivity : AppCompatActivity() {
 
@@ -78,7 +70,7 @@ class MensajesActivity : AppCompatActivity() {
     private var imagenUri: Uri? = null
 
     lateinit var RV_chats: RecyclerView
-    var chatAdapter: AdaptadorChat? = null
+    var chatAdapter: AdaptadorMensaje? = null
     var chatList: List<Chat>? = null
 
     var notificar = false
@@ -93,7 +85,7 @@ class MensajesActivity : AppCompatActivity() {
         obtenerUID()
         leerInfoUsuarioSeleccionado()
         initListeners()
-        abrirConversacion()
+        marcarMensajesComoLeidos()
 
 
     }
@@ -141,7 +133,7 @@ class MensajesActivity : AppCompatActivity() {
         }
 
         toolbar_chat.setOnClickListener {
-            val intent = Intent(applicationContext,InfoPerfilChat::class.java)
+            val intent = Intent(applicationContext, InfoPerfilChatActivity::class.java)
             intent.putExtra("uid",uid_usuario_seleccionado)
             startActivity(intent)
         }
@@ -220,7 +212,7 @@ class MensajesActivity : AppCompatActivity() {
                         (chatList as ArrayList<Chat>).add(chat)
                     }
                 }
-                chatAdapter = AdaptadorChat(
+                chatAdapter = AdaptadorMensaje(
                     this@MensajesActivity,
                     (chatList as ArrayList<Chat>),
                     ReceptorImagen!!,
@@ -561,7 +553,7 @@ class MensajesActivity : AppCompatActivity() {
                                 }
                             }
 
-                        reference.child("chats").child(idMensaje!!).setValue(infoMensajeImagen)
+                        reference.child("chats").child(idMensaje).setValue(infoMensajeImagen)
                             .addOnCompleteListener { task ->
                                 if (task.isSuccessful) {
                                     val listaMensajesEmisor =
@@ -671,14 +663,6 @@ class MensajesActivity : AppCompatActivity() {
                     }
                 })
         }
-    }
-
-
-
-    private fun abrirConversacion() {
-        // Después de abrir la conversación, llamar a la función para marcar mensajes como leídos
-        marcarMensajesComoLeidos()
-
     }
 
     override fun onResume() {

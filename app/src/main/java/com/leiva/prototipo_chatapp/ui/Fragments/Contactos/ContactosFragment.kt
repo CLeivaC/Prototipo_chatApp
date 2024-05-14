@@ -1,4 +1,4 @@
-package com.leiva.prototipo_chatapp.Fragmentos
+package com.leiva.prototipo_chatapp.ui.Fragments.Contactos
 
 import android.app.Activity
 import android.content.ContentValues.TAG
@@ -18,29 +18,33 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageButton
+import android.widget.RelativeLayout
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.appbar.MaterialToolbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
-import com.leiva.prototipo_chatapp.Adaptador.AdaptadorContactos
-import com.leiva.prototipo_chatapp.AgregarContactoActivity
+import com.leiva.prototipo_chatapp.ui.Fragments.Contactos.Adaptador.AdaptadorContactos
+import com.leiva.prototipo_chatapp.ui.Activities.AgregarContacto.AgregarContactoActivity
 import com.leiva.prototipo_chatapp.Modelo.Usuario
 import com.leiva.prototipo_chatapp.R
 import com.leiva.prototipo_chatapp.Utilidades.UtilidadesChat
+import com.leiva.prototipo_chatapp.ui.Fragments.Contactos.Adaptador.FragmentType
 import java.util.Locale
 
-class ContactosFragment : Fragment() {
+class ContactosFragment : Fragment(),FragmentType {
 
     private val READ_CONTACTS_PERMISSION_REQUEST_CODE = 1
     private var usuarioAdaptador: AdaptadorContactos? = null
     private var usuarioLista: List<Usuario>? = null
     private var rvUsuarios: RecyclerView? = null
     private lateinit var buscadorEditText: EditText
-    private lateinit var botonAgregar: Button
+    private lateinit var botonAgregar: ImageButton
     private val AGREGAR_CONTACTO_REQUEST_CODE = 123
 
     override fun onCreateView(
@@ -48,6 +52,17 @@ class ContactosFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val view: View = inflater.inflate(R.layout.fragment_contactos, container, false)
+        // Obtener la Toolbar del MainActivity
+        val toolbar = requireActivity().findViewById<MaterialToolbar>(R.id.toolbarMain)
+
+        val fragmentContainer = view.findViewById<RelativeLayout>(R.id.fragment_container)
+        val layoutParams = RelativeLayout.LayoutParams(
+            RelativeLayout.LayoutParams.MATCH_PARENT,
+            RelativeLayout.LayoutParams.MATCH_PARENT
+        )
+        layoutParams.setMargins(0, toolbar.height, 0, 0)
+        fragmentContainer.layoutParams = layoutParams
+
         initComponents(view)
         solicitarPermisoContactos()
         return view
@@ -169,12 +184,18 @@ class ContactosFragment : Fragment() {
     private val contactosAgregados = HashSet<String>()
 
     private fun verificarContactosEnFirebase(contactos: List<String>) {
+        if (!isAdded) {
+            return
+        }
+
         val firebaseUser = FirebaseAuth.getInstance().currentUser
         val reference = FirebaseDatabase.getInstance().reference.child("usuarios")
         val contentResolver = requireContext().contentResolver
 
         // Obtener el UID del usuario actual
         val uidUsuario = firebaseUser?.uid
+
+        val context = requireContext() // Almacenar una referencia al contexto de manera segura
 
         reference.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -201,9 +222,11 @@ class ContactosFragment : Fragment() {
                 (usuarioLista as ArrayList<Usuario>).clear()
                 (usuarioLista as ArrayList<Usuario>).addAll(usuariosCoincidentes)
                 activity?.runOnUiThread {
-                    usuarioAdaptador = AdaptadorContactos(context!!, usuarioLista!!)
-                    rvUsuarios!!.adapter = usuarioAdaptador
-                    usuarioAdaptador?.notifyDataSetChanged()
+                    if (isAdded) {
+                        usuarioAdaptador = AdaptadorContactos(context, usuarioLista!!, this@ContactosFragment)
+                        rvUsuarios!!.adapter = usuarioAdaptador
+                        usuarioAdaptador?.notifyDataSetChanged()
+                    }
                 }
             }
 
@@ -212,6 +235,7 @@ class ContactosFragment : Fragment() {
             }
         })
     }
+
 
     private fun agregarContactoAUsuarioEnFirebase(uidUsuario: String, nombreContacto: String, telefonoContacto: String) {
         val reference = FirebaseDatabase.getInstance().reference
@@ -269,5 +293,9 @@ class ContactosFragment : Fragment() {
                 callback(null)
             }
         })
+    }
+
+    override fun isChatFragment(): Boolean {
+        return false
     }
 }

@@ -1,4 +1,4 @@
-package com.leiva.prototipo_chatapp
+package com.leiva.prototipo_chatapp.ui.Activities.Login
 
 class VerificationState private constructor() {
 

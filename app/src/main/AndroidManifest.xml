@@ -2,12 +2,17 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-feature
+        android:name="android.hardware.telephony"
+        android:required="false" />
+
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
     <uses-permission android:name="android.permission.WRITE_CONTACTS" />
+    <uses-permission android:name="android.permission.CALL_PHONE"/>
 
     <application
-        android:name=".MyApp"
+        android:name=".Utilidades.MyApp"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -18,22 +23,22 @@
         android:theme="@style/Theme.Prototipo_chatApp"
         tools:targetApi="31">
         <activity
-            android:name=".InfoPerfilChat"
+            android:name=".ui.Activities.InfoPerfilChat.InfoPerfilChatActivity"
             android:exported="false" />
         <activity
-            android:name=".RecuperarContrasena"
+            android:name=".ui.Activities.RecovPassword.RecuperarContrasena"
             android:exported="false" />
         <activity
-            android:name=".AgregarContactoActivity"
+            android:name=".ui.Activities.AgregarContacto.AgregarContactoActivity"
             android:exported="false" />
         <activity
-            android:name=".Chat.MensajesActivity"
+            android:name=".ui.Activities.Mensajes.MensajesActivity"
             android:exported="false" />
         <activity
-            android:name=".Registro"
+            android:name=".ui.Activities.Registro.Registro"
             android:exported="true" />
         <activity
-            android:name=".Login"
+            android:name=".ui.Activities.Login.LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -42,7 +47,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".MainActivity"
+            android:name=".ui.MainActivity"
             android:exported="false" />
 
         <service

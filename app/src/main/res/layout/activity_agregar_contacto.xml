@@ -11,84 +11,73 @@
 
     <TextView
         android:id="@+id/textViewTitulo"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Nuevo Contacto"
-        android:textSize="18sp"
+        android:textSize="24sp"
         android:textStyle="bold"
-        android:gravity="center"
-        android:textColor="#AAB2BD"
+        android:textColor="#FFFFFF"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginTop="25dp"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="25dp"/>
 
     <!-- Nombre -->
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/cardViewNombre"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/textInputNombre"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:cardCornerRadius="8dp"
-        app:cardElevation="4dp"
+        android:hint="Nombre"
+        android:textColorHint="#AAB2BD"
+        app:hintTextColor="#AAB2BD"
         app:layout_constraintTop_toBottomOf="@+id/textViewTitulo"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:backgroundTint="#293241"
         android:layout_marginTop="50dp">
 
-        <EditText
+        <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/editTextNombre"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Nombre"
-            android:textColorHint="#AAB2BD"
-            android:textColor="#AAB2BD"
+            android:textColor="#FFFFFF"
             android:padding="16dp"/>
-
-        <EditText
-            android:id="@+id/editTextApellido"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Apellido"
-            android:textColorHint="#AAB2BD"
-            android:textColor="#AAB2BD"
-            android:layout_marginTop="50dp"
-            android:padding="16dp"/>
-    </com.google.android.material.card.MaterialCardView>
+    </com.google.android.material.textfield.TextInputLayout>
 
     <!-- Teléfono -->
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/cardViewTelefono"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/textInputTelefono"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:cardCornerRadius="8dp"
-        app:cardElevation="4dp"
-        android:backgroundTint="#293241"
-        app:layout_constraintTop_toBottomOf="@+id/cardViewNombre"
+        android:hint="Número de teléfono"
+        android:textColorHint="#AAB2BD"
+        app:hintTextColor="#AAB2BD"
+        app:layout_constraintTop_toBottomOf="@+id/textInputNombre"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="80dp">
+        android:layout_marginTop="20dp">
 
-        <EditText
+        <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/editTextTelefono"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="phone"
-            android:textColorHint="#AAB2BD"
-            android:textColor="#AAB2BD"
-            android:hint="Número de teléfono"
+            android:textColor="#FFFFFF"
             android:padding="16dp"/>
-    </com.google.android.material.card.MaterialCardView>
+    </com.google.android.material.textfield.TextInputLayout>
 
     <!-- Botón -->
     <Button
         android:id="@+id/botonGuardar"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="32dp"
         android:text="Guardar"
-        app:layout_constraintTop_toBottomOf="@+id/cardViewTelefono"
+        app:layout_constraintTop_toBottomOf="@+id/textInputTelefono"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        app:layout_constraintEnd_toEndOf="parent"
+        android:textColor="#FFFFFF"
+        android:backgroundTint="#3F51B5"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

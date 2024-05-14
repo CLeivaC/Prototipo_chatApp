@@ -15,6 +15,7 @@ class Usuario {
     private var oculto : Boolean?=null
     private var claroOscuro : Boolean?=null
     private var notificaciones : Boolean?=null
+    private var fondoPerfilUrl:String= ""
 
     var ultimoMensajeTimestamp: Long = 0L
 
@@ -34,7 +35,8 @@ class Usuario {
         respuesta:String,
         oculto:Boolean,
         claroOscuro:Boolean,
-        notificaciones : Boolean
+        notificaciones : Boolean,
+        fondoPerfilUrl:String
     ) {
         this.uid = uid
         this.n_usuario = n_usuario
@@ -49,7 +51,10 @@ class Usuario {
         this.oculto = oculto
         this.claroOscuro = claroOscuro
         this.notificaciones = notificaciones
+        this.fondoPerfilUrl= fondoPerfilUrl
     }
+
+
 
     fun getUid(): String {
         return uid
@@ -152,5 +157,14 @@ class Usuario {
     fun setNotificaciones(notificaciones: Boolean) {
         this.notificaciones = notificaciones
     }
+
+    fun getFondoPerfilUrl():String{
+        return fondoPerfilUrl
+    }
+
+    fun setFondoPerfilUrl(fondoPerfilUrl: String){
+        this.fondoPerfilUrl = fondoPerfilUrl
+    }
+
 
 }

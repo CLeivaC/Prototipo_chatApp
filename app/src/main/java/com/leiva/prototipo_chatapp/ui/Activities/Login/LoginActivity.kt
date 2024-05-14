@@ -1,6 +1,5 @@
-    package com.leiva.prototipo_chatapp
+    package com.leiva.prototipo_chatapp.ui.Activities.Login
 
-    import android.app.Activity
     import android.content.ContentValues.TAG
     import android.content.Intent
     import android.content.SharedPreferences
@@ -25,7 +24,11 @@
     import com.google.firebase.database.FirebaseDatabase
     import com.google.firebase.database.ValueEventListener
     import com.hbb20.CountryCodePicker
+    import com.leiva.prototipo_chatapp.ui.MainActivity
     import com.leiva.prototipo_chatapp.Modelo.Usuario
+    import com.leiva.prototipo_chatapp.R
+    import com.leiva.prototipo_chatapp.ui.Activities.RecovPassword.RecuperarContrasena
+    import com.leiva.prototipo_chatapp.ui.Activities.Registro.Registro
     import kotlinx.coroutines.CoroutineScope
     import kotlinx.coroutines.Dispatchers
     import kotlinx.coroutines.launch
@@ -33,10 +36,9 @@
     import java.util.Base64
     import java.util.concurrent.TimeUnit
     import kotlin.coroutines.resume
-    import kotlin.coroutines.resumeWithException
     import kotlin.coroutines.suspendCoroutine
 
-    class Login : AppCompatActivity() {
+    class LoginActivity : AppCompatActivity() {
 
         private lateinit var selector_codigo_pais_L: CountryCodePicker
         private lateinit var L_et_telefono: EditText
@@ -74,7 +76,7 @@
             Log.d(TAG, "Stored verification ID al iniciar Login: $storedVerificationId")
             callbacks = object: PhoneAuthProvider.OnVerificationStateChangedCallbacks(){
                 override fun onVerificationCompleted(p0: PhoneAuthCredential) {
-                    startActivity(Intent(applicationContext,MainActivity::class.java))
+                    startActivity(Intent(applicationContext, MainActivity::class.java))
                     finish()
                 }
 
@@ -157,7 +159,7 @@
                 }
             }
             L_registro.setOnClickListener {
-                val intent = Intent(this@Login,Registro::class.java)
+                val intent = Intent(this@LoginActivity, Registro::class.java)
                 startActivity(intent)
             }
 
@@ -176,7 +178,7 @@
                             iniciarSesionConCredencial(credential)
                         } else {
                             Toast.makeText(
-                                this@Login,
+                                this@LoginActivity,
                                 "Por favor, ingrese el código SMS",
                                 Toast.LENGTH_SHORT
                             ).show()
@@ -273,7 +275,7 @@
                                     val usuario: Usuario? = sh.getValue(Usuario::class.java)
                                     val passwordIngresada = L_et_password.text.toString()
                                     val passwordCifradaIngresada = hashPassword(passwordIngresada)
-                                    val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this@Login)
+                                    val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this@LoginActivity)
                                     val storedPassword = sharedPreferences.getString("password", "") ?: ""
                                     Log.i(TAG, "Contraseña ingresada: $passwordIngresada")
                                     Log.i(TAG, "Contraseña cifrada ingresada: $passwordCifradaIngresada")
@@ -317,7 +319,7 @@
                 auth.signInWithCredential(credential).addOnCompleteListener { task ->
                     if (task.isSuccessful) {
                         Log.i(TAG, "Inicio de sesión exitoso")
-                        val intent = Intent(this@Login, MainActivity::class.java)
+                        val intent = Intent(this@LoginActivity, MainActivity::class.java)
                         Toast.makeText(
                             applicationContext,
                             "Ha iniciado sesión con éxito",

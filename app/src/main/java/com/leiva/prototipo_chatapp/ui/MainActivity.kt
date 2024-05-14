@@ -1,4 +1,4 @@
-package com.leiva.prototipo_chatapp
+package com.leiva.prototipo_chatapp.ui
 
 
 import android.os.Bundle
@@ -7,20 +7,17 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
-import androidx.viewpager.widget.ViewPager
+import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
-import com.leiva.prototipo_chatapp.Fragmentos.ChatFragment
-import com.leiva.prototipo_chatapp.Fragmentos.ContactosFragment
-import com.leiva.prototipo_chatapp.Fragmentos.JuegosFragment
-import com.leiva.prototipo_chatapp.Fragmentos.PerfilFragment
-import com.leiva.prototipo_chatapp.Modelo.Chat
+import com.leiva.prototipo_chatapp.R
+import com.leiva.prototipo_chatapp.Utilidades.MyApp
+import com.leiva.prototipo_chatapp.ui.Fragments.Chat.ChatFragment
+import com.leiva.prototipo_chatapp.ui.Fragments.Contactos.ContactosFragment
+import com.leiva.prototipo_chatapp.ui.Fragments.Perfil.PerfilFragment
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
@@ -30,11 +27,11 @@ class MainActivity : AppCompatActivity() {
 
 
     private lateinit var bottomNavigationView: BottomNavigationView
+    private lateinit var toolbar:MaterialToolbar
+
 
     var reference: DatabaseReference? = null
     var firebaseUser: FirebaseUser? = null
-
-    //val ref = FirebaseDatabase.getInstance().reference.child("chats")
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -44,34 +41,6 @@ class MainActivity : AppCompatActivity() {
         navegacionFragmentos()
         restoreSelectedFragment(savedInstanceState)
         cargarEstadoSwitchClaroOscuro()
-
-        /*ref.addValueEventListener(object : ValueEventListener{
-            override fun onDataChange(snapshot: DataSnapshot) {
-                val viewPagerAdapter = supportFragmentManager
-                var contMensajesNoLeidos = 0
-                for(dataSnapshot in snapshot.children){
-                    val chat = dataSnapshot.getValue(Chat::class.java)
-                    if(chat!!.getReceptor().equals(firebaseUser!!.uid) && !chat.isVisto()){
-
-                        contMensajesNoLeidos+=1
-                    }
-                }
-                if(contMensajesNoLeidos == 0){
-                    viewPagerAdapter.addItem(ChatFragment(),"Chats")
-                }else{
-                    viewPagerAdapter.addItem(ChatFragment(),"[$contMensajesNoLeidos] Chats")
-                }
-
-                viewPagerAdapter.addItem(ContactosFragment(),"Contctos")
-                viewPager.adapter= viewPagerAdapter
-                tabLayout.setupWithViewPager(viewPager)
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-
-            }
-        })*/
-
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -87,6 +56,7 @@ class MainActivity : AppCompatActivity() {
         reference =
             FirebaseDatabase.getInstance().reference.child("usuarios").child(firebaseUser!!.uid)
 
+        toolbar = findViewById(R.id.toolbarMain)
     }
 
     private fun navegacionFragmentos() {
@@ -94,7 +64,6 @@ class MainActivity : AppCompatActivity() {
             when (item.itemId) {
                 R.id.chatF -> replaceFrame(ChatFragment())
                 R.id.contactosF -> replaceFrame(ContactosFragment())
-                R.id.juegosF -> replaceFrame(JuegosFragment())
                 R.id.PerfilF -> replaceFrame(PerfilFragment())
             }
             true

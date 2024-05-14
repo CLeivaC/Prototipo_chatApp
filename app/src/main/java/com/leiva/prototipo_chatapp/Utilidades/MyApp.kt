@@ -1,4 +1,4 @@
-package com.leiva.prototipo_chatapp
+package com.leiva.prototipo_chatapp.Utilidades
 
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit

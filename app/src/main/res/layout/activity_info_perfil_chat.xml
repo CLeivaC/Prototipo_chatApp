@@ -5,45 +5,149 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".InfoPerfilChat">
+    tools:context=".ui.Activities.InfoPerfilChat.InfoPerfilChatActivity">
+
+    <!-- Imagen de fondo -->
+    <ImageView
+        android:id="@+id/backgroundImage"
+        android:layout_width="match_parent"
+        android:layout_height="220dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/imagen"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <!-- Foto de perfil -->
+
+    <!-- Nombre de usuario -->
+
+    <!-- Teléfono de usuario -->
+
     <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/imageViewPerfil"
         android:layout_width="150dp"
         android:layout_height="150dp"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:src="@color/black"
-        app:layout_constraintBottom_toTopOf="@+id/textViewNombre"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="32dp"
+        android:elevation="10dp"
+        android:layout_marginBottom="13dp"
         android:scaleType="centerCrop"
-        app:shapeAppearanceOverlay="@style/RoundedImageViewOffOn"
-        android:layout_marginTop="32dp"/>
+        app:layout_constraintBottom_toTopOf="@+id/textViewNombre"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/backgroundImage"
+        app:layout_constraintVertical_bias="1.0"
+        app:shapeAppearanceOverlay="@style/RoundedImageViewOffOn" />
 
-    <!-- Nombre de usuario -->
     <TextView
         android:id="@+id/textViewNombre"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="78dp"
         android:text="Nombre de Usuario"
-        android:textStyle="bold"
         android:textSize="24sp"
-        app:layout_constraintTop_toBottomOf="@+id/imageViewPerfil"
-        app:layout_constraintStart_toStartOf="parent"
+        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="16dp"/>
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/textViewTelefono"
+        app:layout_constraintTop_toBottomOf="@+id/backgroundImage" />
 
-    <!-- Teléfono de usuario -->
     <TextView
         android:id="@+id/textViewTelefono"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Teléfono"
+        tools:text="Teléfono"
         android:textSize="18sp"
         app:layout_constraintTop_toBottomOf="@+id/textViewNombre"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="8dp"/>
+
+
+    <!-- Estado del usuario -->
+    <TextView
+        android:id="@+id/textViewEstadoUsuario"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Estado"
+        android:layout_marginStart="15dp"
+        android:textSize="16sp"
+        app:layout_constraintTop_toBottomOf="@+id/textViewTelefono"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="8dp"/>
+
+    <!-- CardView para el RecyclerView -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardViewEstado"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/textViewEstadoUsuario"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        app:cardCornerRadius="8dp">
+
+        <TextView
+            android:id="@+id/textViewFraseUsuario"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Frase del usuario"
+            android:padding="8dp"
+            android:textSize="16sp"/>
+
+    </androidx.cardview.widget.CardView>
+
+    <!-- Título "Historial de Imágenes" -->
+    <TextView
+        android:id="@+id/textViewTituloHistorial"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Historial de Imágenes"
+        android:textSize="15sp"
+        android:layout_marginStart="15dp"
+        app:layout_constraintTop_toBottomOf="@+id/cardViewEstado"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="20dp"/>
+
+    <!-- CardView para el RecyclerView -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardViewImagenes"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/textViewTituloHistorial"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        app:cardCornerRadius="8dp">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerViewImagenesEnviadas"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:padding="8dp"
+            android:clipToPadding="false"
+            android:orientation="horizontal"/>
+
+    </androidx.cardview.widget.CardView>
+
+    <!-- Botón para llamar -->
+    <Button
+        android:id="@+id/btn_llamar"
+        android:gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:backgroundTint="@color/colorChatDerecho"
+        app:icon="@drawable/ic_llamar"
+        android:text="Llamar"
+        android:textColorHint="@color/white"
+        android:textColor="@android:color/white"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/cardViewImagenes" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

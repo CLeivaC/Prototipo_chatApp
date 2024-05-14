@@ -1,15 +1,12 @@
-package com.leiva.prototipo_chatapp
+package com.leiva.prototipo_chatapp.ui.Activities.Registro
 
 import android.content.Intent
-import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.widget.ArrayAdapter
 import android.widget.EditText
 import android.widget.Spinner
 import android.widget.Toast
-import androidx.annotation.RequiresApi
 import com.google.android.material.button.MaterialButton
 import com.google.firebase.FirebaseException
 import com.google.firebase.auth.FirebaseAuth
@@ -19,6 +16,8 @@ import com.google.firebase.auth.PhoneAuthProvider
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.hbb20.CountryCodePicker
+import com.leiva.prototipo_chatapp.R
+import com.leiva.prototipo_chatapp.ui.MainActivity
 import java.security.MessageDigest
 import java.util.Base64
 import java.util.concurrent.TimeUnit
@@ -73,7 +72,7 @@ class Registro : AppCompatActivity() {
 
         callbacks = object: PhoneAuthProvider.OnVerificationStateChangedCallbacks(){
             override fun onVerificationCompleted(p0: PhoneAuthCredential) {
-                startActivity(Intent(applicationContext,MainActivity::class.java))
+                startActivity(Intent(applicationContext, MainActivity::class.java))
                 finish()
             }
 

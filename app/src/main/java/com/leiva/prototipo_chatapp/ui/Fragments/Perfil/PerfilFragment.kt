@@ -1,10 +1,8 @@
-package com.leiva.prototipo_chatapp.Fragmentos
+package com.leiva.prototipo_chatapp.ui.Fragments.Perfil
 
 import android.app.Activity
 import android.content.ContentValues.TAG
-import android.content.Context
 import android.content.Intent
-import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.text.Editable
@@ -18,13 +16,13 @@ import androidx.appcompat.widget.SwitchCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
-import com.google.android.gms.tasks.Task
+import com.google.android.material.appbar.MaterialToolbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.google.firebase.storage.FirebaseStorage
-import com.leiva.prototipo_chatapp.Login
-import com.leiva.prototipo_chatapp.MainActivity
-import com.leiva.prototipo_chatapp.MyApp
+import com.leiva.prototipo_chatapp.ui.Activities.Login.LoginActivity
+import com.leiva.prototipo_chatapp.ui.MainActivity
+import com.leiva.prototipo_chatapp.Utilidades.MyApp
 import com.leiva.prototipo_chatapp.R
 import kotlinx.coroutines.*
 import kotlinx.coroutines.tasks.await
@@ -51,6 +49,7 @@ class PerfilFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_perfil, container, false)
+
         initializeViews(view)
 
         // Obtener datos del usuario
@@ -565,7 +564,7 @@ class PerfilFragment : Fragment() {
                 "Sesión cerrada correctamente",
                 Toast.LENGTH_SHORT
             ).show()
-            val intent = Intent(requireContext(), Login::class.java)
+            val intent = Intent(requireContext(), LoginActivity::class.java)
             startActivity(intent)
             requireActivity().finish()
         } catch (e: Exception) {

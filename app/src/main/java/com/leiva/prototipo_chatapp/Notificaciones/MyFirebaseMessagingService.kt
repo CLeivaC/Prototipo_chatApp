@@ -10,11 +10,9 @@ import android.os.Build
 import android.os.Bundle
 import androidx.core.app.NotificationCompat
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
-import com.leiva.prototipo_chatapp.MainActivity
-import kotlin.math.E
+import com.leiva.prototipo_chatapp.ui.MainActivity
 
 class MyFirebaseMessagingService : FirebaseMessagingService(){
 
@@ -45,7 +43,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService(){
         val cuerpo = message.data["cuerpo"]
         val notificacion = message.notification
         val j = usuario!!.replace("[\\D]".toRegex(),"").toInt()
-        val intent = Intent(this,MainActivity::class.java)
+        val intent = Intent(this, MainActivity::class.java)
         val bundle = Bundle()
         bundle.putString("usuarioid",usuario)
         intent.putExtras(bundle)
@@ -79,7 +77,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService(){
         val cuerpo = message.data["cuerpo"]
         val notificacion = message.notification
         val j = usuario!!.replace("[\\D]".toRegex(),"").toInt()
-        val intent = Intent(this,MainActivity::class.java)
+        val intent = Intent(this, MainActivity::class.java)
         val bundle = Bundle()
         bundle.putString("usuarioid",usuario)
         intent.putExtras(bundle)
