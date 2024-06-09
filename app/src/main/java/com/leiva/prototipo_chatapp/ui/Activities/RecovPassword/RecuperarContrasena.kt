@@ -1,6 +1,8 @@
 package com.leiva.prototipo_chatapp.ui.Activities.RecovPassword
 
+import android.content.Context
 import android.content.Intent
+import android.net.ConnectivityManager
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.util.Log
@@ -97,28 +99,79 @@ class RecuperarContrasena : AppCompatActivity() {
 
     private fun initListeners (){
         btnEnviarCodigo.setOnClickListener {
-            enviarCodigoSMS()
+            if (isNetworkAvailable()) {
+                enviarCodigoSMS()
+            } else {
+                Toast.makeText(this, "No hay conexión a Internet", Toast.LENGTH_SHORT).show()
+            }
         }
 
         btnVerificarRespuesta.setOnClickListener {
-            verificarRespuesta() // Llama al método verificarRespuesta cuando se presiona el botón de confirmación
+            if (isNetworkAvailable()) {
+                if (etTelefono.text.toString().isEmpty() || etRespuesta.text.toString().isEmpty()) {
+                    Toast.makeText(this, "Rellene los datos vacíos", Toast.LENGTH_SHORT).show()
+                } else {
+                    verificarRespuesta()
+                }
+            } else {
+                Toast.makeText(this, "No hay conexión a Internet", Toast.LENGTH_SHORT).show()
+            }
         }
 
     }
     private fun enviarCodigoSMS() {
         try {
-            var number = etTelefono.text.toString()
-            number = "${selector_codigo_pais.selectedCountryCodeWithPlus}$number" // Aquí se agrega la línea que deseas
+            if (isNetworkAvailable()) {
+                var numero = etTelefono.text.toString()
+                val codigoPais = selector_codigo_pais.selectedCountryNameCode
+                if (numero.isEmpty()) {
+                    Toast.makeText(this, "Rellene el campo del teléfono", Toast.LENGTH_SHORT).show()
+                    return
+                }
+                if (codigoPais == "ES" && numero.length != 9) {
+                    Toast.makeText(this, "El número de teléfono en España debe tener 9 dígitos", Toast.LENGTH_SHORT).show()
+                    return
+                }
+                val phoneNumber = "${selector_codigo_pais.selectedCountryCodeWithPlus}$numero"
+                Log.d("RecuperarContrasena", "Número de teléfono a verificar: $phoneNumber")
 
-            Log.d("RecuperarContrasena", "Número de teléfono a verificar: $number")
+                // Verificar si el número de teléfono existe en la base de datos
+                val usuariosRef = FirebaseDatabase.getInstance().reference.child("usuarios")
+                usuariosRef.orderByChild("telefono").equalTo(phoneNumber).addListenerForSingleValueEvent(object :
+                    ValueEventListener {
+                    override fun onDataChange(dataSnapshot: DataSnapshot) {
+                        if (dataSnapshot.exists()) {
+                            // Si el usuario existe, enviar el código SMS
+                            val options = PhoneAuthOptions.newBuilder(auth)
+                                .setPhoneNumber(phoneNumber)
+                                .setTimeout(60L, TimeUnit.SECONDS)
+                                .setActivity(this@RecuperarContrasena)
+                                .setCallbacks(callbacks)
+                                .build()
+                            PhoneAuthProvider.verifyPhoneNumber(options)
+                            Toast.makeText(this@RecuperarContrasena, "SMS enviado correctamente", Toast.LENGTH_SHORT).show()
+                        } else {
+                            // Si el usuario no existe, mostrar un mensaje
+                            Toast.makeText(
+                                this@RecuperarContrasena,
+                                "El usuario no esta registrado",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    }
 
-            val options = PhoneAuthOptions.newBuilder(auth)
-                .setPhoneNumber(number)
-                .setTimeout(60L, TimeUnit.SECONDS)
-                .setActivity(this)
-                .setCallbacks(callbacks)
-                .build()
-            PhoneAuthProvider.verifyPhoneNumber(options)
+                    override fun onCancelled(databaseError: DatabaseError) {
+                        // Manejar el error si se produce al recuperar los datos del usuario
+                        Toast.makeText(
+                            this@RecuperarContrasena,
+                            "Error al recuperar los datos del usuario",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                })
+            } else {
+                Toast.makeText(this, "No hay conexión a Internet", Toast.LENGTH_SHORT).show()
+            }
         } catch (e: Exception) {
             Log.e("RecuperarContrasena", "Error al enviar el código SMS: ${e.message}")
             Toast.makeText(this, "Error al enviar el código SMS: ${e.message}", Toast.LENGTH_SHORT).show()
@@ -127,6 +180,11 @@ class RecuperarContrasena : AppCompatActivity() {
 
 
 
+    private fun Context.isNetworkAvailable(): Boolean {
+        val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val networkInfo = connectivityManager.activeNetworkInfo
+        return networkInfo != null && networkInfo.isConnected
+    }
 
     private fun verificarRespuesta() {
         try {
@@ -143,6 +201,7 @@ class RecuperarContrasena : AppCompatActivity() {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
                     if (dataSnapshot.exists()) {
                         var respuestaCorrecta = false
+                        var smsCorrecto = false
                         for (usuarioSnapshot in dataSnapshot.children) {
                             val usuario = usuarioSnapshot.getValue(Usuario::class.java)
                             if (usuario != null && usuario.getPregunta() == preguntaSeleccionada && usuario.getRespuesta() == respuestaIngresada) {
@@ -151,7 +210,23 @@ class RecuperarContrasena : AppCompatActivity() {
                             }
                         }
                         if (respuestaCorrecta) {
-                            mostrarDialogoCambiarContrasena()
+
+                            // Verificar el código SMS
+                            val codigoIngresado = etCodigo.text.toString()
+                            val storedVerificationId = VerificationState.getStoredVerificationId()
+                            val credential = PhoneAuthProvider.getCredential(storedVerificationId!!, codigoIngresado)
+                            auth.signInWithCredential(credential).addOnCompleteListener { task ->
+                                if (task.isSuccessful) {
+                                    smsCorrecto = true
+                                    mostrarDialogoCambiarContrasena()
+                                } else {
+                                    Toast.makeText(
+                                        this@RecuperarContrasena,
+                                        "Código SMS incorrecto",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+                            }
 
                         } else {
                             Toast.makeText(
@@ -180,8 +255,13 @@ class RecuperarContrasena : AppCompatActivity() {
                             .create()
 
                         btnConfirmar.setOnClickListener {
-                            // Obtener el nuevo contraseña
-                            val newPassword = hashPassword(editTextNewPassword.text.toString())
+                            val newPassword = editTextNewPassword.text.toString()
+
+                            // Verificar la longitud de la nueva contraseña
+                            if (newPassword.length < 6) {
+                                Toast.makeText(this@RecuperarContrasena, "La contraseña debe tener al menos 6 caracteres", Toast.LENGTH_SHORT).show()
+                                return@setOnClickListener
+                            }
 
                             // Obtener el número de teléfono del usuario actual
                             var numero = etTelefono.text.toString()
@@ -190,19 +270,31 @@ class RecuperarContrasena : AppCompatActivity() {
 
                             // Verificar si el número de teléfono existe
                             if (phoneNumber != null) {
-                                // Actualizar la contraseña en la base de datos
+                                // Obtener la contraseña actual del usuario
                                 val usuariosRef = FirebaseDatabase.getInstance().reference.child("usuarios")
                                 usuariosRef.orderByChild("telefono").equalTo(phoneNumber).addListenerForSingleValueEvent(object : ValueEventListener {
                                     override fun onDataChange(dataSnapshot: DataSnapshot) {
                                         if (dataSnapshot.exists()) {
                                             for (usuarioSnapshot in dataSnapshot.children) {
+                                                val usuario = usuarioSnapshot.getValue(Usuario::class.java)
+                                                val currentHashedPassword = usuario?.getPassword()
+
+                                                // Verificar si la nueva contraseña es igual a la actual
+                                                if (currentHashedPassword == hashPassword(newPassword)) {
+                                                    Toast.makeText(this@RecuperarContrasena, "La nueva contraseña no puede ser igual a la anterior", Toast.LENGTH_SHORT).show()
+                                                    return
+                                                }
+
+                                                val hashedPassword = hashPassword(newPassword)
+
+                                                // Actualizar la contraseña en la base de datos
                                                 val usuarioId = usuarioSnapshot.key
-                                                usuarioSnapshot.ref.child("password").setValue(newPassword)
+                                                usuarioSnapshot.ref.child("password").setValue(hashedPassword)
                                                     .addOnCompleteListener { dbTask ->
                                                         if (dbTask.isSuccessful) {
                                                             Toast.makeText(this@RecuperarContrasena, "Contraseña cambiada exitosamente", Toast.LENGTH_SHORT).show()
                                                             val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this@RecuperarContrasena)
-                                                            sharedPreferences.edit().putString("password", newPassword).apply()
+                                                            sharedPreferences.edit().putString("password", hashedPassword).apply()
 
                                                             // Cerrar y volver a abrir la aplicación
                                                             val intent = Intent(applicationContext, LoginActivity::class.java)

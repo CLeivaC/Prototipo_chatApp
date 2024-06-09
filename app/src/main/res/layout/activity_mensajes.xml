@@ -7,78 +7,90 @@
     tools:context=".ui.Activities.Mensajes.MensajesActivity">
 
 
+    <!--Imagen - Nombre de usuario-->
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar_chat"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/blue_login">
 
-        <!--Imagen - Nombre de usuario-->
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar_chat"
-            android:background="@color/blue_login"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/imagen_perfil_chat"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_marginStart="10dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_imagen_chat"
+            app:shapeAppearanceOverlay="@style/RoundedImageView" />
 
-            <com.google.android.material.imageview.ShapeableImageView
-                android:id="@+id/imagen_perfil_chat"
-                android:src="@drawable/ic_imagen_chat"
-                android:scaleType="centerCrop"
-                app:shapeAppearanceOverlay="@style/RoundedImageView"
-                android:layout_width="35dp"
-                android:layout_height="35dp"
-                android:layout_marginStart="10dp"/>
+        <TextView
+            android:id="@+id/N_usuario_chat"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="15dp"
+            android:text="@string/N_usuario_chat"
+            android:textColor="#fff"
+            android:textSize="18sp" />
 
-            <TextView
-                android:id="@+id/N_usuario_chat"
-                android:text="@string/N_usuario_chat"
-                android:layout_marginStart="15dp"
-                android:textColor="#fff"
-                android:textSize="18sp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
-
-        </androidx.appcompat.widget.Toolbar>
+    </androidx.appcompat.widget.Toolbar>
 
     <!--Chats-->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/RV_chats"
-        android:layout_below="@+id/toolbar_chat"
         android:layout_width="match_parent"
-        android:layout_above="@+id/RL_Enviar_Mensajes"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        android:layout_above="@+id/LL_Enviar_Mensajes"
+        android:layout_below="@+id/toolbar_chat" />
 
-    <RelativeLayout
-        android:id="@+id/RL_Enviar_Mensajes"
+    <LinearLayout
+        android:id="@+id/LL_Enviar_Mensajes"
         android:padding="5dp"
         android:layout_alignParentBottom="true"
-        android:layout_width="wrap_content"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content">
-        <!--Adjuntar una imagen-->
-        <ImageButton
-            android:background="@drawable/ic_adjuntar"
-            android:id="@+id/IB_Adjuntar"
-            android:layout_alignParentStart="true"
-            android:layout_width="40dp"
-            android:layout_height="40dp"/>
 
-        <!--Escribir un mensaje-->
+        <!-- Adjuntar una imagen -->
+        <ImageButton
+            android:id="@+id/IB_Adjuntar"
+            android:layout_width="40dp"
+            android:layout_gravity="bottom"
+            android:layout_height="40dp"
+            android:background="@drawable/ic_adjuntar"/>
+
+        <!-- Escribir un mensaje -->
         <EditText
             android:id="@+id/ET_mensaje"
-            android:hint="@string/ET_mensaje"
-            android:layout_toEndOf="@+id/IB_Adjuntar"
-            android:layout_centerVertical="true"
-            android:layout_marginStart="5dp"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="7dp"
+            android:layout_marginTop="9dp"
             android:layout_marginEnd="5dp"
-            android:layout_toStartOf="@+id/IB_Enviar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:background="@drawable/burbuja_mensaje"
+            android:hint="@string/ET_mensaje"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:textColor="@color/black" />
 
-        <!--Enviar el imagen-->
+        <!-- Enviar el imagen -->
         <ImageButton
-            android:background="@drawable/ic_enviar"
             android:id="@+id/IB_Enviar"
-            android:layout_alignParentEnd="true"
             android:layout_width="40dp"
-            android:layout_height="40dp"/>
+            android:layout_height="40dp"
+            android:layout_gravity="bottom"
+            android:background="@drawable/ic_enviar" />
 
-    </RelativeLayout>
+        <!-- Enviar el imagen -->
+        <ImageButton
+            android:id="@+id/IB_EnviarTexto"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_gravity="bottom"
+            android:background="@drawable/ic_enviar_texto"
+            android:visibility="gone" />
 
+    </LinearLayout>
 
 
 </RelativeLayout>

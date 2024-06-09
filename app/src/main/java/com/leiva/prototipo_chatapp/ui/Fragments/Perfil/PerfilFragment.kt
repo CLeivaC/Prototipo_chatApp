@@ -1,10 +1,17 @@
 package com.leiva.prototipo_chatapp.ui.Fragments.Perfil
 
 import android.app.Activity
+
+import android.app.AlertDialog
+import android.content.ContentValues
 import android.content.ContentValues.TAG
+import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
@@ -13,21 +20,34 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.appcompat.widget.SwitchCompat
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
-import com.google.android.material.appbar.MaterialToolbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.google.firebase.storage.FirebaseStorage
-import com.leiva.prototipo_chatapp.ui.Activities.Login.LoginActivity
-import com.leiva.prototipo_chatapp.ui.MainActivity
-import com.leiva.prototipo_chatapp.Utilidades.MyApp
 import com.leiva.prototipo_chatapp.R
 import kotlinx.coroutines.*
 import kotlinx.coroutines.tasks.await
-class PerfilFragment : Fragment() {
+import java.io.IOException
+import android.Manifest
+import android.app.ProgressDialog
+import android.net.ConnectivityManager
+import android.os.Handler
+import android.os.Looper
+import androidx.core.content.ContextCompat.getSystemService
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
+import com.leiva.prototipo_chatapp.Data.database.AppDatabase
+import com.leiva.prototipo_chatapp.Data.database.entities.UsuarioData
+import com.leiva.prototipo_chatapp.Utilidades.MyApp
+import com.leiva.prototipo_chatapp.ui.Activities.Login.LoginActivity
+import com.leiva.prototipo_chatapp.ui.MainActivity
 
+class PerfilFragment : Fragment() {
+    fun Fragment.requireContextOrNull() = context
     private lateinit var nombreTextView: TextView
     private lateinit var telefonoTextView: TextView
     private lateinit var apellidoTextView: TextView
@@ -36,20 +56,27 @@ class PerfilFragment : Fragment() {
     private lateinit var imagenPerfil: ImageView
     private val PICK_IMAGE_REQUEST = 1
     private lateinit var fondoImagenUri: ImageView
-    private var seEstaCambiandoImagenPerfil = false
-    private var seEstaCambiandoFondoPerfil = false
+    private var tipoImagen = false
     private lateinit var switchActivarOculto : SwitchCompat
     private lateinit var switchClaroOscuro : SwitchCompat
     private lateinit var btnCerrarSesion : Button
     private lateinit var switchNotificaciones : SwitchCompat
-
+    val CAMARA_REQUEST_CODE =  200
+    private val REQUEST_PERMISSION_CODE = 1001
+    private var nombreActual = ""
+    private var apellidoActual = ""
+    private var telefonoActual = ""
+    private var infoAdicionalActual = ""
+    private val handler = Handler(Looper.getMainLooper())
+    private val delayMillis = 5000L // 5 segundos
+    private var textChangeRunnable: Runnable? = null
     private var selectedFragmentId: Int = R.id.PerfilF
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_perfil, container, false)
-
         initializeViews(view)
 
         // Obtener datos del usuario
@@ -60,6 +87,8 @@ class PerfilFragment : Fragment() {
 
         // Configurar la funcionalidad para cambiar el tema
         cambiarTema()
+
+
 
         return view
     }
@@ -83,84 +112,97 @@ class PerfilFragment : Fragment() {
 
         // Agregar OnClickListener al ImageView para seleccionar imagen de la galería
         imagenPerfil.setOnClickListener {
-            seEstaCambiandoImagenPerfil = true
-            abrirGaleria()
+            tipoImagen = true
+            mostrarDialogo()
         }
 
         fondoImagenUri.setOnClickListener() {
-            seEstaCambiandoFondoPerfil = true
-            abrirGaleria()
+            tipoImagen = false
+            mostrarDialogo()
         }
 
         switchActivarOculto.setOnCheckedChangeListener { _, isChecked ->
-            guardarEstadoSwitchEnBaseDeDatos(isChecked)
+            // No guardar en la base de datos
+            guardarEstadoSwitchEnDataStore(isChecked)
         }
 
         switchNotificaciones.setOnCheckedChangeListener { _, isChecked ->
-            guardarEstadoNotificacionesEnBaseDeDatos(isChecked)
+            // No guardar en la base de datos
+            guardarEstadoSwitchNotificacionesEnDataStore(isChecked)
         }
 
         btnCerrarSesion.setOnClickListener {
             cerrarSesion()
         }
-        nombreTextView.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable?) {
-                guardarDatosUsuario()
-            }
 
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-        })
-
-        apellidoTextView.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable?) {
-                guardarDatosUsuario()
-            }
-
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-        })
-
-        telefonoTextView.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable?) {
-                guardarDatosUsuario()
-            }
-
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-        })
-
-        editTextInfoAdicional.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable?) {
-                guardarDatosUsuario()
-            }
-
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-        })
+        setupTextWatchers()
     }
 
 
 
+    private fun setupTextWatchers() {
+        nombreTextView.addTextChangedListener(getTextWatcher())
+        apellidoTextView.addTextChangedListener(getTextWatcher())
+        telefonoTextView.addTextChangedListener(getTextWatcher())
+        editTextInfoAdicional.addTextChangedListener(getTextWatcher())
+    }
+
+    private fun getTextWatcher(): TextWatcher {
+        return object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+                // Cancela el Runnable pendiente si existe
+                textChangeRunnable?.let { handler.removeCallbacks(it) }
+
+                // Crea un nuevo Runnable que se ejecutará después del retraso especificado
+                textChangeRunnable = Runnable {
+                    guardarDatosUsuario()
+                }
+
+                // Programa la ejecución del Runnable después del retraso
+                handler.postDelayed(textChangeRunnable!!, delayMillis)
+            }
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+        }
+    }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        // Llama a la función cargarEstadoSwitch() cuando se crea la vista del fragmento
+
         cargarEstadoSwitch()
         cargarEstadoSwitchClaroOscuro()
         cargarEstadoSwitchNotificaciones()
-
 
     }
 
     private fun obtenerDatosUsuario() {
         val firebaseUser = FirebaseAuth.getInstance().currentUser
         val userId = firebaseUser?.uid
+
         if (userId != null) {
-            databaseReference.child(userId).addListenerForSingleValueEvent(object :
+            if (isNetworkAvailable()) {
+                obtenerDatosDesdeFirebase()
+            } else {
+                cargarDatosDesdeRoom()
+            }
+        } else {
+            cargarDatosDesdeRoom()
+        }
+    }
+
+    private fun Fragment.isNetworkAvailable(): Boolean {
+        val connectivityManager = requireContext().getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val networkInfo = connectivityManager.activeNetworkInfo
+        return networkInfo != null && networkInfo.isConnected
+    }
+
+
+    private fun obtenerDatosDesdeFirebase() {
+        val firebaseUser = FirebaseAuth.getInstance().currentUser
+        val userId = firebaseUser?.uid
+        if (userId != null) {
+            databaseReference.child(userId).addValueEventListener(object :
                 ValueEventListener {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
                     if (dataSnapshot.exists()) {
@@ -168,47 +210,45 @@ class PerfilFragment : Fragment() {
                             val nombre = dataSnapshot.child("nombre").getValue(String::class.java)
                             val apellido = dataSnapshot.child("apellido").getValue(String::class.java)
                             val telefono = dataSnapshot.child("telefono").getValue(String::class.java)
-
                             val infoAdicional = dataSnapshot.child("infoAdicional").getValue(String::class.java)
                             val imagenUrl = dataSnapshot.child("imagen").getValue(String::class.java)
                             val fondoPerfilUrl = dataSnapshot.child("fondoPerfilUrl").getValue(String::class.java)
-                            val switchActivar = dataSnapshot.child("oculto").getValue(Boolean::class.java)
 
-                            nombreTextView.text = nombre
-                            apellidoTextView.text = apellido
-                            telefonoTextView.text = telefono
-                            // Verificar si el valor de switchActivar es nulo antes de usarlo
-                            switchActivar?.let { activo ->
-                                // Si no es nulo, asignar el valor al Switch
-                                switchActivarOculto.isChecked = activo
-                            } ?: run {
-                                // Si es nulo, establecer el valor predeterminado del Switch (por ejemplo, false)
-                                switchActivarOculto.isChecked = false
+                            // Crear un objeto UsuarioData con los datos obtenidos de Firebase
+                            val usuario = UsuarioData(
+                                id = userId,
+                                nombre = nombre ?: "",
+                                apellido = apellido ?: "",
+                                telefono = telefono ?: "",
+                                infoAdicional = infoAdicional ?: "",
+                                imagen = imagenUrl ?: "",
+                                fondoPerfilUrl = fondoPerfilUrl ?: ""
+                            )
+
+                            // Insertar o actualizar el usuario en la base de datos local
+                            insertarUsuarioEnRoom(usuario)
+
+                            // Actualizar la interfaz de usuario con los datos de Firebase
+                            with(requireView()) {
+                                nombreTextView.text = nombre
+                                apellidoTextView.text = apellido
+                                telefonoTextView.text = telefono
+                                editTextInfoAdicional.setText(infoAdicional)
+
+                                // Cargar la imagen de perfil usando Glide
+                                Glide.with(requireContext())
+                                    .load(imagenUrl)
+                                    .placeholder(R.drawable.ic_item_usuario)
+                                    .error(R.drawable.ic_juegos)
+                                    .into(findViewById(R.id.P_imagen))
+
+                                // Cargar el fondo de perfil usando Glide
+                                Glide.with(requireContext())
+                                    .load(fondoPerfilUrl)
+                                    .placeholder(R.drawable.ic_item_usuario)
+                                    .error(R.drawable.ic_juegos)
+                                    .into(findViewById(R.id.fondo_perfil_image))
                             }
-
-                            // Mostrar la información adicional
-                            editTextInfoAdicional.setText(infoAdicional)
-
-                            // Cargar la imagen de perfil usando Glide
-                            view?.let {
-                                Glide.with(requireContext())
-                                    .load(imagenUrl) // La URL de la imagen de perfil del usuario
-                                    .placeholder(R.drawable.ic_item_usuario) // Imagen de placeholder mientras se carga la imagen
-                                    .error(R.drawable.ic_juegos) // Imagen de error si no se puede cargar la imagen
-                                    .into(it.findViewById(R.id.P_imagen))
-                            } // ImageView donde se mostrará la imagen
-
-                            // Cargar el fondo de perfil usando Glide
-                            view?.let {
-                                Glide.with(requireContext())
-                                    .load(fondoPerfilUrl) // La URL del fondo de perfil del usuario
-                                    .placeholder(R.drawable.ic_item_usuario) // Imagen de placeholder mientras se carga la imagen
-                                    .error(R.drawable.ic_juegos) // Imagen de error si no se puede cargar la imagen
-                                    .into(it.findViewById(R.id.fondo_perfil_image))
-                            } // ImageView donde se mostrará el fondo de perfil
-
-                            // Actualizar los datos del usuario en Firebase
-                            guardarDatosUsuario()
 
                         } catch (e: Exception) {
                             Log.e(TAG, "Error al obtener datos de Firebase: ${e.message}")
@@ -218,13 +258,96 @@ class PerfilFragment : Fragment() {
 
                 override fun onCancelled(databaseError: DatabaseError) {
                     Log.e(TAG, "Error en la consulta a Firebase: ${databaseError.message}")
+                    // Si hay un error en la consulta a Firebase, cargar desde la base de datos local
+                    cargarDatosDesdeRoom()
                 }
             })
+        } else {
+            // Si no hay un usuario autenticado, cargar desde la base de datos local
+            cargarDatosDesdeRoom()
         }
         Log.d(TAG, "Datos del usuario obtenidos correctamente")
     }
 
 
+    // Función para verificar si hay cambios en los datos del usuario
+    private fun insertarUsuarioEnRoom(usuario: UsuarioData) {
+        lifecycleScope.launch(Dispatchers.IO) {
+            val context = requireContextOrNull() ?: return@launch
+            val dao = AppDatabase.getInstance(context).usuarioDao()
+
+            // Verificar si el usuario ya existe en la base de datos local
+            val usuarioExistente = dao.obtenerUsuario(usuario.id)
+
+            if (usuarioExistente != null) {
+                // Si el usuario ya existe, actualiza los datos
+                val usuarioActualizado = usuarioExistente.copy(
+                    nombre = usuario.nombre,
+                    apellido = usuario.apellido,
+                    telefono = usuario.telefono,
+                    infoAdicional = usuario.infoAdicional,
+                    imagen = usuario.imagen,
+                    fondoPerfilUrl = usuario.fondoPerfilUrl
+                )
+                dao.actualizarUsuario(usuarioActualizado)
+            } else {
+                // Si el usuario no existe, inserta un nuevo usuario
+                dao.insertarUsuario(usuario)
+            }
+
+
+            // Cargar los datos desde Room nuevamente después de la inserción o actualización
+            cargarDatosDesdeRoom()
+        }
+    }
+    // Función para cargar los datos de todos los usuarios desde Room
+    private fun cargarDatosUsuarioUI(usuario: UsuarioData) {
+        with(requireView()) {
+            findViewById<TextView>(R.id.editTextNombre).text = usuario.nombre
+            findViewById<TextView>(R.id.editTextApellido).text = usuario.apellido
+            findViewById<TextView>(R.id.editTextTelefono).text = usuario.telefono
+            findViewById<EditText>(R.id.editTextInfoAdicional).setText(usuario.infoAdicional)
+
+            // Cargar la imagen de perfil usando Glide
+            Glide.with(requireContext())
+                .load(usuario.imagen) // URL de la imagen de perfil del usuario
+                .placeholder(R.drawable.ic_item_usuario) // Imagen de placeholder mientras se carga la imagen
+                .error(R.drawable.ic_juegos) // Imagen de error si no se puede cargar la imagen
+                .into(findViewById(R.id.P_imagen))
+
+            // Cargar el fondo de perfil usando Glide
+            Glide.with(requireContext())
+                .load(usuario.fondoPerfilUrl) // URL del fondo de perfil del usuario
+                .placeholder(R.drawable.ic_item_usuario) // Imagen de placeholder mientras se carga la imagen
+                .error(R.drawable.ic_juegos) // Imagen de error si no se puede cargar la imagen
+                .into(findViewById(R.id.fondo_perfil_image))
+        }
+    }
+    private fun cargarDatosDesdeRoom() {
+        GlobalScope.launch(Dispatchers.IO) {
+            val usuarios = AppDatabase.getInstance(requireContext()).usuarioDao().obtenerTodosUsuarios()
+
+            withContext(Dispatchers.Main) {
+                if (usuarios.isNotEmpty()) {
+                    // Limpiar vistas antes de agregar nuevos datos
+                    // (esto es opcional dependiendo de cómo quieras mostrar los usuarios)
+                    nombreTextView.text = ""
+                    apellidoTextView.text = ""
+                    telefonoTextView.text = ""
+                    editTextInfoAdicional.setText("")
+                    requireView().findViewById<ImageView>(R.id.P_imagen).setImageResource(R.drawable.ic_item_usuario)
+                    requireView().findViewById<ImageView>(R.id.fondo_perfil_image).setImageResource(R.drawable.ic_item_usuario)
+
+                    // Mostrar los datos del usuario activo
+                    val usuarioActivoId = obtenerIdUsuarioActivo() // Obtener el ID del usuario activo
+                    val usuarioActivo = usuarios.find { it.id == usuarioActivoId }
+                    usuarioActivo?.let { cargarDatosUsuarioUI(it) }
+                } else {
+                    Log.d(TAG, "No hay datos de usuario en la base de datos local")
+                }
+            }
+        }
+    }
 
     private fun guardarDatosUsuario() {
         val firebaseUser = FirebaseAuth.getInstance().currentUser
@@ -235,29 +358,54 @@ class PerfilFragment : Fragment() {
         val infoAdicional = editTextInfoAdicional.text.toString()
 
         userId?.let { uid ->
-            val usuario = HashMap<String, Any>()
-            usuario["nombre"] = nombre
-            usuario["apellido"] = apellido
-            usuario["telefono"] = telefono
-            usuario["infoAdicional"] = infoAdicional
+            // Verificar si ha habido cambios en los campos
+            if (nombre != nombreActual || apellido != apellidoActual || telefono != telefonoActual || infoAdicional != infoAdicionalActual) {
+                // Crear un mapa para almacenar los datos actualizados
+                val usuarioActualizado = hashMapOf<String, Any>()
 
-            try {
-                // Verificar si la referencia de la base de datos es nula
-                if (databaseReference == null) {
-                    Log.e(TAG, "La referencia de la base de datos es nula")
-                    return
+                // Verificar cada campo y agregarlo al mapa solo si ha habido cambios
+                if (nombre != nombreActual) {
+                    usuarioActualizado["nombre"] = nombre
+                }
+                if (apellido != apellidoActual) {
+                    usuarioActualizado["apellido"] = apellido
+                }
+                if (telefono != telefonoActual) {
+                    usuarioActualizado["telefono"] = telefono
+                }
+                if (infoAdicional != infoAdicionalActual) {
+                    usuarioActualizado["infoAdicional"] = infoAdicional
                 }
 
-                databaseReference.child(uid).updateChildren(usuario)
-                    .addOnSuccessListener {
-                        Log.d(TAG, "Datos actualizados exitosamente en Firebase")
-                        // Aquí no necesitas actualizar la URL del fondo de perfil ya que no estás cambiando la imagen de fondo
+                try {
+                    // Verificar si la referencia de la base de datos es nula
+                    if (databaseReference == null) {
+                        Log.e(TAG, "La referencia de la base de datos es nula")
+                        return
                     }
-                    .addOnFailureListener { e ->
-                        Log.e(TAG, "Error al actualizar datos en Firebase: ${e.message}")
+
+                    // Actualizar los datos en Firebase solo si ha habido cambios
+                    if (usuarioActualizado.isNotEmpty()) {
+                        databaseReference.child(uid).updateChildren(usuarioActualizado)
+                            .addOnSuccessListener {
+                                Log.d(TAG, "Datos actualizados exitosamente en Firebase")
+                                // Actualizar los valores actuales
+                                nombreActual = nombre
+                                apellidoActual = apellido
+                                telefonoActual = telefono
+                                infoAdicionalActual = infoAdicional
+                            }
+                            .addOnFailureListener { e ->
+                                Log.e(TAG, "Error al actualizar datos en Firebase: ${e.message}")
+                            }
+                    } else {
+                        Log.d(TAG, "No hay cambios para actualizar en Firebase")
                     }
-            } catch (e: Exception) {
-                Log.e(TAG, "Error inesperado al actualizar datos en Firebase: ${e.message}")
+                } catch (e: Exception) {
+                    Log.e(TAG, "Error inesperado al actualizar datos en Firebase: ${e.message}")
+                }
+            } else {
+                Log.d(TAG, "No hay cambios para actualizar en Firebase")
             }
         } ?: run {
             Log.e(TAG, "UID de usuario nulo")
@@ -265,8 +413,22 @@ class PerfilFragment : Fragment() {
         Log.d(TAG, "Datos del usuario guardados correctamente")
     }
 
+    private fun abrirCamara() {
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+            // El permiso está concedido, abre la cámara
+            val camaraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+            startActivityForResult(camaraIntent, CAMARA_REQUEST_CODE)
+        } else {
+            // El permiso no está concedido, solicita permiso
+            solicitarPermisoCamara()
+        }
+    }
 
-    // Método para abrir la galería
+    private fun solicitarPermisoCamara() {
+        requestPermissions(arrayOf(Manifest.permission.CAMERA), CAMARA_REQUEST_CODE)
+
+    }
+
     private fun abrirGaleria() {
         val intent = Intent(Intent.ACTION_PICK)
         intent.type = "image/*"
@@ -278,48 +440,165 @@ class PerfilFragment : Fragment() {
     }
 
 
-    // Método para manejar el resultado de la selección de imagen de la galería
+    // Método para manejar el resultado de la solicitud de permisos
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        when (requestCode) {
+            REQUEST_PERMISSION_CODE -> {
+                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // Permiso concedido, abre la galería
+                    abrirGaleria()
+                } else {
+                    // Permiso denegado, muestra un mensaje o toma otra acción
+                    Toast.makeText(requireContext(), "Permiso de galería denegado", Toast.LENGTH_SHORT).show()
+                }
+            }
+            CAMARA_REQUEST_CODE -> {
+                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // Permiso concedido, abre la cámara
+                    abrirCamara()
+                } else {
+                    // Permiso denegado, muestra un mensaje o toma otra acción
+                    Toast.makeText(requireContext(), "Permiso de cámara denegado", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
 
+
+    private fun verificarYSolicitarPermisoCamara() {
+        try {
+            if (ContextCompat.checkSelfPermission(
+                    requireContext(),
+                    Manifest.permission.CAMERA
+                ) == PackageManager.PERMISSION_GRANTED
+            ) {
+                // Si ya se tiene permiso, abrir la cámara
+                abrirCamara()
+            } else {
+                // Si no se tiene permiso, solicitarlo
+                solicitarPermisoCamara()
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error al verificar y solicitar permiso de la cámara: ${e.message}")
+            Toast.makeText(
+                requireContext(),
+                "Error al verificar y solicitar permiso de la cámara",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+    }
+
+    private fun mostrarDialogo() {
+        val opciones = arrayOf("Abrir Galería", "Cámara")
+        val builder = AlertDialog.Builder(requireContext())
+        builder.setTitle("Seleccionar opción")
+            .setItems(opciones) { dialog, which ->
+                when (which) {
+                    0 -> abrirGaleria()
+                    1 -> verificarYSolicitarPermisoCamara()
+                }
+            }
+        val dialog = builder.create()
+        dialog.show()
+    }
+
+    // Método para manejar el resultado de la selección de imagen de la galería
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
         try {
             if (requestCode == PICK_IMAGE_REQUEST && resultCode == Activity.RESULT_OK && data != null && data.data != null) {
+                // Obtiene la URI de la imagen seleccionada desde la galería
                 val uri = data.data
-
-                // Verificar si se está cambiando la imagen de perfil
-                if (seEstaCambiandoImagenPerfil) {
-                    // Carga la imagen seleccionada en el ImageView de imagenPerfil
-                    Glide.with(requireContext()).load(uri).into(imagenPerfil)
-                    // Guarda la URL de la imagen de perfil en la base de datos
-                    guardarUrlImagenEnBaseDeDatos(uri!!).invokeOnCompletion {
-                        if (it == null) {
-                            Log.d(TAG, "URL de la imagen de perfil guardada correctamente")
-                        } else {
-                            Log.e(TAG, "Error al guardar la URL de la imagen de perfil: ${it.message}")
-                        }
-                    }
+                if (uri != null) {
+                    cargarImagenYSubirla(uri)
                 }
-
-                // Verificar si se está cambiando el fondo de perfil
-                if (seEstaCambiandoFondoPerfil) {
-                    // Carga la imagen seleccionada en el ImageView de fondoImagenUri
-                    Glide.with(requireContext()).load(uri).into(fondoImagenUri)
-                    // Guarda la URL del fondo de perfil en la base de datos
-                    guardarUrlFondoPerfilEnBaseDeDatos(uri!!).invokeOnCompletion {
-                        if (it == null) {
-                            Log.d(TAG, "URL del fondo de perfil guardada correctamente")
-                        } else {
-                            Log.e(TAG, "Error al guardar la URL del fondo de perfil: ${it.message}")
-                        }
-                    }
+            } else if (requestCode == CAMARA_REQUEST_CODE && resultCode == Activity.RESULT_OK && data != null) {
+                // Guarda la imagen de la cámara en la galería
+                val imageBitmap = data.extras?.get("data") as Bitmap
+                val uri = guardarImagenEnGaleria(requireContext(), imageBitmap)
+                uri?.let {
+                    cargarImagenYSubirla(uri)
                 }
             }
         } catch (e: Exception) {
             Log.e(TAG, "Error en onActivityResult: ${e.message}")
         }
     }
+    private fun cargarImagenYSubirla(uri: Uri) {
+        // Crea y muestra un ProgressDialog
+        val progressDialog = ProgressDialog(requireContext())
+        progressDialog.setMessage("Cargando imagen...")
+        progressDialog.setCancelable(false)
+        progressDialog.show()
 
+
+
+        // Carga la imagen seleccionada en la ImageView correspondiente y muestra un indicador de carga
+        if (tipoImagen) {
+            Glide.with(requireContext())
+                .load(uri)
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .placeholder(R.drawable.ic_perfil_mensaje) // Placeholder mientras se carga la imagen
+                .error(R.drawable.ic_perfil_mensaje) // Imagen de error si la carga falla
+                .into(imagenPerfil)
+        }
+        if (!tipoImagen) {
+            Glide.with(requireContext())
+                .load(uri)
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .placeholder(R.drawable.ic_perfil_mensaje) // Placeholder mientras se carga la imagen
+                .error(R.drawable.ic_perfil_mensaje) // Imagen de error si la carga falla
+                .into(fondoImagenUri)
+        }
+
+        // Guarda la URL de la imagen en la base de datos en segundo plano
+        if (tipoImagen) {
+            guardarUrlImagenEnBaseDeDatos(uri).invokeOnCompletion {
+                if (it == null) {
+                    Log.d(TAG, "URL de la imagen de perfil guardada correctamente")
+                } else {
+                    Log.e(TAG, "Error al guardar la URL de la imagen de perfil: ${it.message}")
+                }
+                // Cierra el ProgressDialog una vez que la carga está completa o falla
+                progressDialog.dismiss()
+            }
+        }
+        if (!tipoImagen) {
+            guardarUrlFondoPerfilEnBaseDeDatos(uri).invokeOnCompletion {
+                if (it == null) {
+                    Log.d(TAG, "URL del fondo de perfil guardada correctamente")
+                } else {
+                    Log.e(TAG, "Error al guardar la URL del fondo de perfil: ${it.message}")
+                }
+                // Cierra el ProgressDialog una vez que la carga está completa o falla
+                progressDialog.dismiss()
+            }
+        }
+    }
+
+
+
+    private fun guardarImagenEnGaleria(context: Context, bitmap: Bitmap): Uri? {
+        val contentValues = ContentValues().apply {
+            put(MediaStore.Images.Media.DISPLAY_NAME, "image_${System.currentTimeMillis()}.jpg")
+            put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg")
+        }
+        val contentResolver = context.contentResolver
+        val uri = contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
+        uri?.let {
+            try {
+                val outputStream = contentResolver.openOutputStream(uri)
+                outputStream?.use { stream ->
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 90, stream)
+                }
+                return uri
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
+        }
+        return null
+    }
 
 
 
@@ -406,80 +685,6 @@ class PerfilFragment : Fragment() {
         }
     }
 
-
-
-    private fun guardarEstadoSwitchEnBaseDeDatos(estado: Boolean) {
-        val firebaseUser = FirebaseAuth.getInstance().currentUser
-        val userId = firebaseUser?.uid
-
-        userId?.let { uid ->
-            val usuario = HashMap<String, Any>()
-            usuario["oculto"] = estado
-
-            try {
-                // Verificar si la referencia de la base de datos es nula
-                if (databaseReference == null) {
-                    Log.e(TAG, "La referencia de la base de datos es nula")
-                    return
-                }
-
-                databaseReference.child(uid).updateChildren(usuario)
-                    .addOnSuccessListener {
-                        Log.d(TAG, "Estado del switch guardado exitosamente en Firebase")
-                    }
-                    .addOnFailureListener { e ->
-                        Log.e(TAG, "Error al guardar estado del switch en Firebase: ${e.message}")
-                    }
-            } catch (e: Exception) {
-                Log.e(TAG, "Error inesperado al guardar estado del switch en Firebase: ${e.message}")
-            }
-        } ?: run {
-            Log.e(TAG, "UID de usuario nulo")
-        }
-    }
-
-
-    private fun guardarEstadoNotificacionesEnBaseDeDatos(notificacion: Boolean) {
-        val firebaseUser = FirebaseAuth.getInstance().currentUser
-        val userId = firebaseUser?.uid
-
-        userId?.let { uid ->
-            val usuario = HashMap<String, Any>()
-            usuario["notificaciones"] = notificacion  // Aquí usamos "notificaciones" como clave para el estado del interruptor
-
-            val reference = FirebaseDatabase.getInstance().reference.child("usuarios").child(uid)
-            try {
-                reference.updateChildren(usuario)
-                    .addOnSuccessListener {
-                        Log.d(TAG, "Estado del interruptor de notificaciones guardado exitosamente en Firebase")
-                    }
-                    .addOnFailureListener { e ->
-                        Log.e(TAG, "Error al guardar estado del interruptor de notificaciones en Firebase: ${e.message}")
-                    }
-            } catch (e: Exception) {
-                Log.e(TAG, "Error inesperado al guardar notificacion del interruptor de notificaciones en Firebase: ${e.message}")
-            }
-        } ?: run {
-            Log.e(TAG, "UID de usuario nulo")
-        }
-    }
-
-    override fun onPause() {
-        super.onPause()
-        guardarEstadoSwitchEnDataStore(switchActivarOculto.isChecked)
-        guardarEstadoSwitchClaroOscuroEnDataStore(switchClaroOscuro.isChecked)
-        guardarEstadoSwitchNotificacionesEnDataStore(switchNotificaciones.isChecked)
-    }
-
-    override fun onResume() {
-        super.onResume()
-        lifecycleScope.launch {
-            (requireActivity().application as MyApp).readSwitchState().collect { isChecked ->
-                switchActivarOculto.isChecked = isChecked
-            }
-        }
-    }
-
     private fun cargarEstadoSwitch() {
         lifecycleScope.launch {
             (requireActivity().application as MyApp).readSwitchState().collect { isChecked ->
@@ -491,14 +696,30 @@ class PerfilFragment : Fragment() {
     private fun guardarEstadoSwitchEnDataStore(isChecked: Boolean) {
         lifecycleScope.launch(Dispatchers.IO) {
             (requireActivity().application as MyApp).writeSwitchState(isChecked)
+
+            // Actualizar el estado del switch en la base de datos
+            val firebaseUser = FirebaseAuth.getInstance().currentUser
+            val userId = firebaseUser?.uid
+            userId?.let { uid ->
+                val userStatusMap = mapOf("oculto" to isChecked)
+                FirebaseDatabase.getInstance().reference.child("usuarios").child(uid)
+                    .updateChildren(userStatusMap)
+                    .addOnSuccessListener {
+                        // Operación de actualización exitosa
+                    }
+                    .addOnFailureListener { e ->
+                        // Error al actualizar la base de datos
+                        Log.e("MainActivity", "Error al actualizar el estado del usuario: $e")
+                    }
+            } ?: run {
+                Log.e("MainActivity", "UID de usuario nulo")
+            }
         }
     }
-
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putInt("selected_fragment_id", selectedFragmentId)
     }
-
 
     // Cargar el estado del switch claro/oscuro desde DataStore
     private fun cargarEstadoSwitchClaroOscuro() {
@@ -530,30 +751,26 @@ class PerfilFragment : Fragment() {
             (requireActivity().application as MyApp).writeSwitchNotificacionesState(isChecked)
         }
     }
-
-
-
     private fun cambiarTema() {
         switchClaroOscuro.setOnCheckedChangeListener { _, isChecked ->
             try {
                 if (isChecked) {
                     // Cambiar a modo oscuro
-                    (activity as? MainActivity)?.setDayNight(0)
+                    MainActivity.setDayNight(0)
                     telefonoTextView.setTextColor(resources.getColor(R.color.white))
                     Log.d(TAG, "Tema cambiado a oscuro")
                 } else {
                     // Cambiar a modo claro
-                    (activity as? MainActivity)?.setDayNight(1)
+                    MainActivity.setDayNight(1)
                     Log.d(TAG, "Tema cambiado a claro")
                 }
+                // No guardar en la base de datos
             } catch (e: Exception) {
                 Log.e(TAG, "Error al cambiar el tema: ${e.message}")
                 // Aquí podrías mostrar un mensaje de error al usuario si lo deseas
             }
         }
     }
-
-
     private fun cerrarSesion() {
         try {
             // Cerrar sesión y redirigir a la pantalla de inicio de sesión
@@ -573,6 +790,28 @@ class PerfilFragment : Fragment() {
         }
     }
 
+    override fun onPause() {
+        super.onPause()
+        guardarEstadoSwitchClaroOscuroEnDataStore(switchClaroOscuro.isChecked)
+        guardarEstadoSwitchNotificacionesEnDataStore(switchNotificaciones.isChecked)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        lifecycleScope.launch {
+            (requireActivity().application as MyApp).readSwitchState().collect { isChecked ->
+                switchActivarOculto.isChecked = isChecked
+            }
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        handler.removeCallbacksAndMessages(null) // Detiene todos los Runnable pendientes
+    }
 
 
+    private fun obtenerIdUsuarioActivo(): String? {
+        return Firebase.auth.currentUser?.uid
+    }
 }

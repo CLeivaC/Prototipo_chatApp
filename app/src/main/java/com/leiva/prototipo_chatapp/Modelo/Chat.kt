@@ -12,7 +12,6 @@ class Chat {
         private var visto = false
         private var receptorActivo: Boolean = false
         private var hora: Long = 0
-
         constructor()
 
         constructor(
@@ -22,7 +21,6 @@ class Chat {
             mensaje: String,
             url: String,
             visto: Boolean,
-            imagenEmisorUrl: String,
             receptorActivo: Boolean,
             hora: Long
         ) {

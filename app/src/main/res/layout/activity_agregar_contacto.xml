@@ -44,6 +44,19 @@
             android:padding="16dp"/>
     </com.google.android.material.textfield.TextInputLayout>
 
+    <!-- Country Picker -->
+    <com.hbb20.CountryCodePicker
+        android:id="@+id/countryCodePicker"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="#FFFFFF"
+        app:ccp_contentColor="@color/white"
+        app:ccp_defaultNameCode="ES"
+        app:layout_constraintTop_toBottomOf="@+id/textInputNombre"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="35dp"
+        app:layout_constraintEnd_toStartOf="@id/textInputTelefono"/>
+
     <!-- Teléfono -->
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/textInputTelefono"
@@ -54,7 +67,7 @@
         android:textColorHint="#AAB2BD"
         app:hintTextColor="#AAB2BD"
         app:layout_constraintTop_toBottomOf="@+id/textInputNombre"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@id/countryCodePicker"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="20dp">
 

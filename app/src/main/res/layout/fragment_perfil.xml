@@ -1,7 +1,6 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/fragment_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ui.Fragments.Perfil.PerfilFragment">
@@ -79,7 +78,8 @@
                                 android:hint="Nombre"
                                 android:inputType="text"
                                 android:maxLines="1"
-                                android:paddingBottom="8dp" />
+                                android:paddingBottom="8dp"
+                                android:maxLength="20"/>
 
                         </com.google.android.material.textfield.TextInputLayout>
 
@@ -97,7 +97,8 @@
                                 android:inputType="text"
                                 android:maxLines="1"
                                 android:background="@null"
-                                android:paddingBottom="8dp" /> <!-- Espacio para la línea inferior -->
+                                android:paddingBottom="8dp"
+                                android:maxLength="20"/> <!-- Espacio para la línea inferior -->
 
                         </com.google.android.material.textfield.TextInputLayout>
 
@@ -130,7 +131,8 @@
                             android:textStyle="bold"
                             android:inputType="textMultiLine"
                             android:minLines="1"
-                            android:layout_marginTop="5dp"/>
+                            android:layout_marginTop="5dp"
+                            android:maxLength="30"/>
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>
 

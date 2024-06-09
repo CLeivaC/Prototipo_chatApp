@@ -7,7 +7,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
-import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -27,8 +26,6 @@ class MainActivity : AppCompatActivity() {
 
 
     private lateinit var bottomNavigationView: BottomNavigationView
-    private lateinit var toolbar:MaterialToolbar
-
 
     var reference: DatabaseReference? = null
     var firebaseUser: FirebaseUser? = null
@@ -56,7 +53,6 @@ class MainActivity : AppCompatActivity() {
         reference =
             FirebaseDatabase.getInstance().reference.child("usuarios").child(firebaseUser!!.uid)
 
-        toolbar = findViewById(R.id.toolbarMain)
     }
 
     private fun navegacionFragmentos() {
@@ -90,18 +86,20 @@ class MainActivity : AppCompatActivity() {
         super.onResume()
         lifecycleScope.launch {
             val switchState = (application as MyApp).readSwitchState().first()
+            Log.d("estado",switchState.toString())
             if (!switchState) {
                 updateUserStatus(false)
             }
         }
-
     }
 
-   override fun onDestroy() {
+    override fun onDestroy() {
         super.onDestroy()
-       if (isFinishing) {
-           updateUserStatus(true)
-       }
+       /* if (isFinishing) {
+
+            updateUserStatus(true)
+        }*/
+        updateUserStatus(true)
     }
 
     override fun onStop() {
@@ -109,12 +107,14 @@ class MainActivity : AppCompatActivity() {
         if (isChangingConfigurations) {
             updateUserStatus(true)
         }
+        //updateUserStatus(true)
     }
 
     private fun updateUserStatus(boolen: Boolean) {
         val userStatusMap = mapOf("oculto" to boolen)
         reference!!.updateChildren(userStatusMap)
             .addOnSuccessListener {
+
                 // Operación de actualización exitosa
             }
             .addOnFailureListener { e ->
@@ -124,27 +124,39 @@ class MainActivity : AppCompatActivity() {
     }
 
     // Restaurar el fragmento seleccionado desde SharedPreferences
-    fun setDayNight(mode: Int) {
-        if (mode == 0) {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-        } else {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+    companion object {
+        fun setDayNight(mode: Int) {
+            if (mode == 0) {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+            } else {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+            }
         }
     }
 
 
     private fun cargarEstadoSwitchClaroOscuro() {
-        lifecycleScope.launch {
-            val isChecked = (application as MyApp).readSwitchClaroOscuroState().first()
-            // Establecer el tema según el estado del switch
-            if (isChecked) {
-                setDayNight(0) // Modo oscuro
-            } else {
-                setDayNight(1) // Modo claro
+        val firebaseUser = FirebaseAuth.getInstance().currentUser
+        if (firebaseUser != null) {
+            // Si el usuario está autenticado, cargar el estado del switch claro/oscuro
+            lifecycleScope.launch {
+                val isChecked = (application as MyApp).readSwitchClaroOscuroState().first()
+                // Establecer el tema según el estado del switch
+                if (isChecked) {
+                    setDayNight(0) // Modo oscuro
+                } else {
+                    setDayNight(1) // Modo claro
+                }
             }
+        } else {
+            // Si el usuario no está autenticado, establecer siempre el modo claro
+            setDayNight(1)
         }
     }
 
+
+
 }
+
 
 

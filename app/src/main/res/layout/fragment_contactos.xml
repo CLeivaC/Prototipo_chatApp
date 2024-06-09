@@ -15,7 +15,8 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:padding="16dp"
-        android:gravity="center_vertical">
+        android:gravity="center_vertical"
+        android:layout_marginTop="?attr/actionBarSize">
 
         <!-- Campo de búsqueda -->
         <EditText

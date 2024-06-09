@@ -1,5 +1,9 @@
 package com.leiva.prototipo_chatapp.Notificaciones
 
+/*
+ * Objeto que contiene todos los datos que va a mostrarse en la notificación
+ */
+
 class Data {
     private var usuario : String = ""
     private var icono = 0

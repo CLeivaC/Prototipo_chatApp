@@ -4,177 +4,193 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="20dp"
     tools:context=".ui.Activities.Registro.Registro">
 
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:src="@drawable/fondo_login"
+        android:src="@drawable/imagen_fondo_login"
         android:scaleType="centerCrop"/>
-
+    <ImageView
+        android:id="@+id/ic_registro"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_centerHorizontal="true"
+        android:src="@drawable/ic_login"
+        android:layout_marginTop="90dp"
+        android:layout_marginLeft="170dp"
+        />
     <TextView
+        android:id="@+id/registro"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:layout_marginTop="40dp"
-        android:textSize="28sp"
+        android:layout_marginTop="30dp"
+        android:textStyle="bold"
+        android:textSize="30sp"
         android:text="Login"
+        android:layout_marginBottom="120dp"
+        android:layout_centerHorizontal="true"
         android:textAppearance="@style/AppTheme.Light" />
 
-    <LinearLayout
-        android:layout_width="391dp"
-        android:layout_height="711dp"
-        android:gravity="center"
-        android:orientation="vertical">
-
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        app:cardElevation="8dp"
+        app:cardCornerRadius="8dp"
+        android:layout_below="@+id/registro"
+        android:layout_marginTop="200dp"
+        > <!-- Ajusta esta línea -->
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
             android:gravity="center"
-            android:orientation="horizontal">
+            android:orientation="vertical"
+            android:padding="16dp">
 
-
-            <com.hbb20.CountryCodePicker
-                android:id="@+id/selector_codigo_pais_L"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
                 android:layout_marginTop="10dp"
-                app:ccp_defaultNameCode="ES"
-                app:passwordToggleEnabled="true" />
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <com.hbb20.CountryCodePicker
+                    android:id="@+id/selector_codigo_pais_L"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginTop="10dp"
+                    app:ccp_defaultNameCode="ES"
+                    app:passwordToggleEnabled="true" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <EditText
+                        android:id="@+id/L_et_telefono"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp"
+                        android:hint="Telefono"
+                        android:inputType="phone"
+                        android:maxLength="20" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+            </LinearLayout>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/L_enviar_otp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:backgroundTint="@color/blue_login"
+                android:text="Enviar código sms"
+                app:icon="@drawable/ic_sms"
+                app:iconGravity="textStart" />
 
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp">
 
                 <EditText
-                    android:id="@+id/L_et_telefono"
+                    android:id="@+id/L_et_codigo"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="10dp"
-                    android:hint="Telefono"
-                    android:inputType="phone">
+                    android:hint="Codigo"
+                    android:inputType="number"
+                    android:maxLength="10" />
 
-                </EditText>
             </com.google.android.material.textfield.TextInputLayout>
-        </LinearLayout>
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/L_enviar_otp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="10dp"
-            android:backgroundTint="@color/blue_login"
-            android:text="Enviar código sms"
-            app:icon="@drawable/ic_sms"
-            app:iconGravity="textStart" />
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="10dp">
-
-            <EditText
-                android:id="@+id/L_et_codigo"
+            <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Codigo">
+                android:layout_margin="10dp"
+                android:layout_marginTop="10dp"
+                app:passwordToggleEnabled="true">
 
-            </EditText>
+                <EditText
+                    android:id="@+id/L_et_password"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Contraseña"
+                    android:inputType="textPassword"
+                    android:maxLength="20" />
 
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:orientation="horizontal">
 
-        </com.google.android.material.textfield.TextInputLayout>
+                    <CheckBox
+                        android:id="@+id/L_checkbox_recuerdame"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checked="false" />
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:layout_marginTop="10dp"
-            app:passwordToggleEnabled="true">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Recuérdame"
+                        android:textColor="@android:color/black"
+                        android:textSize="16sp"
+                        android:textAppearance="@style/AppTheme.Light" />
 
-            <EditText
-                android:id="@+id/L_et_password"
+                </LinearLayout>
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/L_iniciar_sesion"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Contraseña">
-
-            </EditText>
+                android:layout_margin="10dp"
+                android:layout_marginTop="10dp"
+                android:backgroundTint="@color/blue_login"
+                android:text="Iniciar sesion"
+                app:icon="@drawable/ic_user"
+                app:iconGravity="textStart" />
 
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:orientation="horizontal">
 
-                <CheckBox
-                    android:id="@+id/L_checkbox_recuerdame"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:checked="false" />
-
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Recuérdame"
-                    android:textColor="@android:color/black"
-                    android:textSize="16sp"
-                    android:textAppearance="@style/AppTheme.Light"/>
+                    android:text="¿No tienes cuenta?" />
+
+                <TextView
+                    android:id="@+id/L_registro"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:text="Registrate"
+                    android:textStyle="bold"
+                    android:onClick="irARecuperarContrasena" />
 
             </LinearLayout>
 
-        </com.google.android.material.textfield.TextInputLayout>
-
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/L_iniciar_sesion"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:layout_marginTop="10dp"
-            android:backgroundTint="@color/blue_login"
-            android:text="Iniciar sesion"
-            app:icon="@drawable/ic_user"
-            app:iconGravity="textStart" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:orientation="horizontal">
-
             <TextView
+                android:id="@+id/L_restablecer_contrasena"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="¿No tienes cuenta?" />
-
-            <TextView
-                android:id="@+id/L_registro"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:text="Registrate"
+                android:layout_marginTop="2dp"
+                android:padding="14dp"
+                android:text="Olvidar contraseña"
                 android:textStyle="bold"
-                android:onClick="irARecuperarContrasena"
-                />
+                android:onClick="irARecuperarContrasena" />
 
         </LinearLayout>
-
-        <!-- Aquí agregamos la frase de "Restablecer Contraseña" -->
-        <TextView
-            android:id="@+id/L_restablecer_contrasena"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="Olvidar contrasena"
-            android:textStyle="bold"
-            android:onClick="irARecuperarContrasena"
-            />
-
-    </LinearLayout>
-
+    </androidx.cardview.widget.CardView>
 
 </RelativeLayout>

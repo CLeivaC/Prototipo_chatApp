@@ -1,6 +1,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_marginStart="100dp"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:paddingBottom="20dp">
@@ -26,6 +27,12 @@
         android:layout_toStartOf="@+id/imagen_perfil_mensaje_derecho"
         android:layout_alignParentTop="true">
 
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+
+
         <!-- Mensaje de texto -->
         <TextView
             android:id="@+id/TXT_ver_mensaje"
@@ -35,30 +42,45 @@
             android:layout_marginStart="10dp"
             android:layout_marginEnd="10dp"
             android:padding="8dp"
-            android:text="@string/TXT_ver_mensaje"
+            android:layout_alignParentEnd="true"
+            tools:text="@string/TXT_ver_mensaje"
             android:textSize="18sp"
             android:background="@drawable/background_derecho"/>
+
+        <!-- Imagen enviada -->
+
         <TextView
             android:id="@+id/textViewHoraMensaje"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/TXT_ver_mensaje"
-            android:layout_alignEnd="@id/TXT_ver_mensaje"
-            android:layout_marginTop="2dp"
-            android:layout_marginEnd="1dp"
-            tools:text="12:34 PM"
-            android:singleLine="true"
+            android:layout_alignEnd="@id/estadoMensaje"
+            android:layout_marginTop="3dp"
+            android:layout_marginEnd="13dp"
+            android:layout_marginRight="5dp"
             android:ellipsize="none"
-            android:textSize="12sp"/>
+            android:singleLine="true"
+            android:textSize="12sp"
+            tools:text="12:34" />
 
-        <!-- Imagen enviada -->
+        <!-- Estado del mensaje -->
+        <ImageView
+            android:id="@+id/estadoMensaje"
+            android:layout_width="10dp"
+            android:layout_height="10dp"
+            android:src="@drawable/ic_checkgris"
+            android:layout_below="@id/TXT_ver_mensaje"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="5dp"
+            />
+        </RelativeLayout>
+
         <androidx.cardview.widget.CardView
             android:id="@+id/cardView_imagen_enviada_derecha"
             android:layout_width="250dp"
             android:layout_height="250dp"
             android:visibility="gone"
             android:layout_marginRight="7dp"
-            android:layout_below="@id/TXT_ver_mensaje"
             app:cardCornerRadius="12dp"
             app:cardElevation="2dp"
             app:cardUseCompatPadding="true">
@@ -101,18 +123,11 @@
             android:layout_below="@id/cardView_imagen_enviada_derecha"
             android:layout_alignEnd="@id/cardView_imagen_enviada_derecha" />
 
+
+
     </RelativeLayout>
 
-    <!-- Estado del mensaje -->
-    <ImageView
-        android:id="@+id/estadoMensaje"
-        android:layout_width="10dp"
-        android:layout_height="10dp"
-        android:src="@drawable/ic_checkgris"
-        android:layout_below="@id/imagen_perfil_mensaje_derecho"
-        android:layout_alignParentEnd="true"
-        android:layout_marginTop="8dp"
-        android:layout_marginRight="40dp"/>
+
 
 
 
